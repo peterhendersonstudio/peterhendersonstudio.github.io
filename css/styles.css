@@ -1,0 +1,1238 @@
+/* ==========================================================================
+   MASTER DESIGN SYSTEM & TYPOGRAPHY CODES (Peter Henderson Portfolio)
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400&display=swap');
+
+html { background: #000; color: #fff; scroll-behavior: smooth; }
+body { 
+    overflow-x: hidden; 
+    margin: 0; 
+    padding: 0; 
+    -webkit-user-drag: none; 
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ==========================================================================
+   DESKTOP VIEWPORT LAYOUTS (Pristine 75% Width Windowed Architecture)
+   ========================================================================== */
+
+/* GLOBAL CONTROLS & NAVIGATION */
+#global-back {
+    position: fixed;
+    top: 4rem;
+    left: 6.5rem;
+    z-index: 500;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.75);
+    font-weight: 300;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    display: none;
+    pointer-events: auto;
+}
+#global-back:hover { color: #fff; letter-spacing: 0.6em; }
+
+body[data-layer="detail"] #global-back {
+    top: 2rem;
+    left: 2rem;
+    z-index: 650;
+    color: rgba(255,255,255,0.55);
+    padding: 0.75rem 1rem 0.7rem 0;
+}
+
+body[data-layer="detail"] #global-back:hover {
+    color: rgba(255,255,255,0.95);
+}
+
+body[data-layer="detail"] .bottom-hud {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.bottom-hud {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 11rem; 
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 6.5rem 3.5rem 6.5rem;
+    pointer-events: none;
+    background: linear-gradient(
+        to top, 
+        rgba(0,0,0,0.58) 0%, 
+        rgba(0,0,0,0.5) 22%, 
+        rgba(0,0,0,0.35) 45%, 
+        rgba(0,0,0,0.17) 70%, 
+        rgba(0,0,0,0.04) 88%, 
+        transparent 100%
+    );
+}
+
+.hud-line {
+    position: absolute;
+    bottom: 6.5rem;
+    left: 6.5rem;
+    right: 6.5rem;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.13);
+}
+
+.nav-tier-container {
+    display: flex;
+    gap: 3rem;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    margin-bottom: 1.2rem;
+}
+.nav-tier-container.visible { opacity: 1; pointer-events: auto; }
+.tier-3 { margin-bottom: 0.8rem; font-size: 10px; opacity: 0.5; }
+
+.hud-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    pointer-events: auto;
+}
+
+.cinema-name {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 17px;
+    letter-spacing: 0.6em;
+    text-transform: uppercase;
+    font-weight: 300;
+    color: #fff;
+    opacity: 0.52;
+    transition: all 0.5s ease;
+    pointer-events: auto;
+    cursor: pointer;
+    text-shadow: 0 1px 14px rgba(0, 0, 0, 0.8);
+}
+.cinema-name:hover { opacity: 0.9; }
+
+.nav-group { display: flex; gap: 3.5rem; pointer-events: auto; }
+.nav-link {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: #fff;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0.38;
+    text-shadow: 0 1px 14px rgba(0, 0, 0, 0.8);
+}
+.nav-link.active { opacity: 0.9; }
+.nav-link:hover { opacity: 1; }
+
+/* THE SNAP SCROLL CONTAINER ARBITER */
+.snap-container { 
+    height: 100vh; 
+    overflow-y: scroll; 
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    overscroll-behavior-y: none; 
+}
+.snap-container::-webkit-scrollbar { display: none; }
+
+/* Desktop Section Sizing: Scaled to match the balanced 16:9 image box proportions at 75vw */
+section { 
+    width: 100vw !important;
+    height: 42.19vw !important;       /* Balanced proportional height locks sections flush with no gaps */
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    position: relative !important; 
+    overflow: hidden; 
+    background-color: #000;
+    opacity: 0.8; 
+    transition: opacity 0.8s ease-in-out;
+}
+section.is-active { opacity: 1; }
+section .caption-block {
+    opacity: 0.68;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+section.is-active .caption-block {
+    opacity: 1;
+}
+
+/* ==========================================================================
+   DESKTOP VIEWPORT LAYOUTS (Full-Bleed Edge-to-Edge Architecture)
+   ========================================================================== */
+
+/* Fix: Expand width to 100vw and anchor to left 0 to eliminate side black bars completely */
+#layer-home section .img-layer,
+#layer-location section .img-layer,
+section .glass-wall {
+    position: absolute !important;
+    width: 100vw !important;           /* Stretches the image across the total screen width */
+    height: 100% !important;
+    max-width: none !important;        
+    max-height: none !important;       
+    left: 0 !important;                /* Aligns perfectly to the left edge */
+    top: 0 !important;
+    object-fit: cover !important;      /* Ensures no stretching occurs while filling space */
+    transition: transform 2.5s cubic-bezier(0.19, 1, 0.22, 1), opacity 1.2s ease-in-out !important;
+    will-change: transform, opacity;
+}
+
+.media-stage {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    background: #000 !important;
+    z-index: 0 !important;
+}
+
+/* --- FEATURE 1: PARENT FOLDER CROSSFADE ENGINE (NO ZOOM) --- */
+.home-img-1 { z-index: 10 !important; }
+.home-img-2 { z-index: 20 !important; opacity: 0; }
+
+
+/* --- FEATURE 2: SUBFOLDER ZOOM MECHANICS (MILFORD DETAILED PLATES ONLY) --- */
+/* 1. Scroll-Triggered Active Plate Zoom (Scoped strictly to subfolders) */
+#layer-location section.is-active .zoom-on-hover {
+    transform: scale(1.018) !important;
+}
+
+/* 2. Direct Pointer Hover Micro-Zoom (Scoped strictly to subfolders) */
+#layer-location .group:hover .img-layer {
+    transform: scale(1.03) !important;
+}
+
+.group:hover .img-plate {
+    transform: scale(1.015) !important;
+}
+
+.glass-wall { z-index: 50; background: transparent; cursor: pointer; }
+
+/* Aligns text layers cleanly within the left boundary of the balanced 75% wide desktop plate */
+.caption-block {
+    position: absolute !important;
+    left: 14vw !important;
+    bottom: 3.5vw !important;
+    z-index: 60;
+    pointer-events: none;
+}
+
+/* ART TYPOGRAPHY ELEMENTS */
+.native-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 22px;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    display: block;
+    line-height: 1;
+    margin-bottom: 0.35rem;
+    -webkit-font-smoothing: antialiased;
+}
+
+.archive-title {
+    font-family: 'Cormorant Garamond', serif !important;
+    font-size: 34px;
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.1;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.96);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* EXHIBITION DETAIL LAYOUT VIEW */
+#layer-detail:not(.hidden) {
+    min-height: 100vh;
+    background: #000;
+}
+
+.exhibition-frame {
+    --detail-side-safe: clamp(4.5rem, 8vw, 8rem);
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    position: relative;
+    box-sizing: border-box;
+    padding-top: clamp(5.75rem, 8vh, 7rem);
+}
+
+.hero-wrapper {
+    height: min(78vh, calc(100vh - 9.5rem));
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--detail-side-safe);
+    background: #000;
+    margin-top: 0;
+    box-sizing: border-box;
+}
+
+.hero-exhibition {
+    width: auto !important;
+    height: auto !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.45s ease;
+}
+
+.hero-exhibition.is-loaded {
+    opacity: 1;
+}
+
+.detail-aspect-panorama {
+    --detail-side-safe: clamp(2.25rem, 5vw, 5.5rem);
+}
+
+.detail-aspect-panorama .hero-wrapper {
+    height: min(80vh, calc(100vh - 8rem));
+}
+
+.detail-aspect-portrait .hero-wrapper,
+.detail-aspect-square .hero-wrapper {
+    height: min(76vh, calc(100vh - 8.5rem));
+}
+
+.detail-aspect-portrait .hero-exhibition,
+.detail-aspect-square .hero-exhibition {
+    max-width: min(78vw, 980px) !important;
+}
+
+.detail-category-birds {
+    --detail-side-safe: clamp(5rem, 12vw, 14rem);
+}
+
+.detail-category-birds .hero-wrapper {
+    height: min(74vh, calc(100vh - 9rem));
+}
+
+.exhibition-plaque {
+    text-align: center;
+    margin-top: clamp(0.85rem, 1.8vh, 1.35rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: contents;
+    padding-bottom: 12rem;
+}
+.english-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 300;
+    font-style: italic;
+    letter-spacing: 0.3em;
+    color: rgba(255,255,255,0.95);
+}
+
+#layer-detail .native-name {
+    font-size: 15px;
+    letter-spacing: 0.34em;
+    color: rgba(255,255,255,0.32);
+    margin-bottom: 0.15rem;
+}
+
+#layer-detail .english-name {
+    font-size: clamp(15px, 1.35vw, 19px);
+    letter-spacing: 0.34em;
+    color: rgba(255,255,255,0.62);
+}
+
+/* REFINED INTERACTIVE NAV CHEVRONS */
+.side-nav {
+    position: fixed;
+    top: clamp(1.45rem, 3.4vh, 2.65rem);
+    width: 2.4rem;
+    height: 2.4rem;
+    z-index: 650;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.34; 
+    transition: opacity 0.3s ease, transform 0.3s ease, color 0.3s ease;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 28px; 
+    color: #fff;
+    pointer-events: auto;
+}
+.side-nav:hover { opacity: 0.8; transform: scale(1.1); }
+.side-nav.left-0 {
+    left: auto;
+    right: clamp(5.2rem, 7vw, 7rem);
+}
+.side-nav.right-0 { right: clamp(2rem, 4.5vw, 4.5rem); }
+
+@media (max-width: 1100px) {
+    .exhibition-frame {
+        --detail-side-safe: clamp(3.5rem, 8vw, 5rem);
+    }
+
+    .hero-wrapper {
+        height: min(76vh, calc(100vh - 9rem));
+    }
+
+    .side-nav { top: clamp(1.3rem, 3.2vh, 2.4rem); }
+}
+
+/* ABOUT SECTION (NARRATIVE BLOCK) */
+.about-section {
+    max-width: 650px;
+    margin: clamp(10rem, 22vh, 15rem) auto 4rem auto;
+    text-align: center;
+    padding: 0 2rem;
+}
+.about-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 21px;
+    line-height: 1.8;
+    font-weight: 300;
+    color: rgba(255,255,255,0.7); 
+    font-style: italic;
+    letter-spacing: 0.02em;
+}
+
+/* SAMPLE CALLOUTS (TEXTURE ANALYSIS STRIP) */
+.texture-strip {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 2rem auto 12rem auto;
+    width: 95vw;
+    max-width: 1800px;
+}
+.sample-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.sample-img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    opacity: 1;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    pointer-events: none;
+}
+.sample-label {
+    font-family: 'Cormorant Garamond', serif; 
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    font-style: italic; 
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.mobile-image-viewer {
+    display: none;
+}
+
+.scroll-rail {
+    position: fixed;
+    right: 3.5rem;
+    top: 35%;
+    bottom: 35%;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.05);
+    z-index: 100;
+}
+#progress-bar { width: 1px; background: rgba(255,255,255,0.4); height: 0%; transition: height 0.1s linear; }
+
+/* ABOUT PANEL GLASSMORPHISM OVERLAY */
+.about-overlay-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(35px);
+    -webkit-backdrop-filter: blur(35px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.about-overlay-layer.visible { opacity: 1; pointer-events: auto; }
+
+.about-split-container {
+    max-width: 920px;
+    width: 90vw;
+    display: flex;
+    align-items: stretch;
+    gap: 3.5rem;
+    transform: translateY(20px);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.about-overlay-layer.visible .about-split-container { transform: translateY(0); }
+
+.about-left-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    min-width: 45px;
+}
+.about-icons-group { display: flex; flex-direction: column; gap: 1.8rem; }
+.about-social-icon {
+    color: rgba(255, 255, 255, 0.4);
+    width: 20px;
+    height: 20px;
+    display: block;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+.contact-icon-button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+.contact-icon-button svg {
+    width: 20px;
+    height: 20px;
+}
+.about-social-icon:hover { color: #ffffff; transform: scale(1.05); }
+.about-close-trigger {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    color: rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+    transition: color 0.3s ease;
+    margin-top: 2rem;
+}
+.about-close-trigger:hover { color: rgba(255, 255, 255, 0.85); }
+.about-divider-line { width: 1px; background: rgba(255, 255, 255, 0.12); align-self: stretch; }
+
+.about-right-col { flex: 1; display: flex; flex-direction: column; gap: 1.8rem; text-align: left; }
+.about-right-col p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 21px;
+    line-height: 1.75;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.88); 
+    font-style: italic;
+    letter-spacing: 0.01em;
+    -webkit-font-smoothing: antialiased;
+}
+.about-signature {
+    padding-top: 0.8rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px !important;
+    font-weight: 400 !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+    letter-spacing: 0.05em !important;
+    font-style: normal !important;
+}
+
+/* ==========================================================================
+   PRODUCTION-GRADE MOBILE ARCHITECTURE ENGINE (Defensive Viewport Sandbox)
+   ========================================================================= */
+/* FORCE SCROLLING PREVIEWS TO FILL THE ASPECT RATIO COMPLETELY */
+#layer-home img, 
+#layer-location img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;     /* Clips horizontal overflow to fill vertical space */
+}
+/* ==========================================================================
+   HORIZONTAL DISCLOSURE SLIDER SYSTEM (Desktop Hover Engine)
+   ========================================================================== */
+#portfolio-navigation-system {
+    isolation: isolate;
+}
+
+.nav-item-group {
+    display: flex !important;
+    flex-direction: row-reverse !important; /* Reverses order so menus grow cleanly out to the LEFT */
+    align-items: center !important;
+    position: relative !important;
+    gap: 0 !important;
+    padding: 18px 0 !important;
+    margin: -18px 0 !important;
+    transition: opacity 0.55s ease !important;
+}
+
+.nav-item-group:hover {
+    z-index: 40 !important;
+}
+
+.nav-item-group:hover ~ .nav-item-group,
+.nav-item-group:has(~ .nav-item-group:hover) {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.sub-menu-drawer {
+    position: absolute !important;
+    right: 0 !important;
+    bottom: 100% !important;
+    transform: translateY(10px) !important;
+    z-index: 20 !important;
+    width: max-content !important;
+    max-width: none !important;
+    opacity: 0 !important;
+    overflow: visible !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 0.82rem !important;
+    padding: 0 0.2rem 1.45rem 2.8rem !important;
+    margin: 0 -0.2rem 0 0 !important;
+    pointer-events: none !important;
+    transition:
+        opacity 0.78s ease,
+        transform 0.95s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    white-space: nowrap !important;
+}
+
+.nested-nav-group {
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    align-items: center !important;
+    position: relative !important;
+    gap: 0 !important;
+    padding: 18px 0 !important;
+    margin: -18px 0 !important;
+}
+
+.nested-sub-menu {
+    position: absolute !important;
+    top: 50% !important;
+    right: 100% !important;
+    transform: translateY(-50%) translateX(10px) !important;
+    width: max-content !important;
+    max-width: none !important;
+    opacity: 0 !important;
+    overflow: visible !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0 !important;
+    padding: 24px 2.1rem 24px 0 !important;
+    margin: -24px -0.6rem !important;
+    pointer-events: none !important;
+    transition:
+        opacity 0.78s ease,
+        transform 0.95s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.nested-nav-group:hover .nested-sub-menu,
+.nested-nav-group.menu-open .nested-sub-menu {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: translateY(-50%) translateX(0) !important;
+}
+
+/* Slide Reveal Triggers on Hover States */
+.nav-item-group:hover .sub-menu-drawer {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: translateY(0) !important;
+}
+
+.nav-item-group:hover .main-trigger {
+    opacity: 0.62 !important;
+    color: rgba(255, 255, 255, 0.78) !important;
+    cursor: default !important;
+}
+
+.nav-item-group:hover .main-trigger::after {
+    content: "" !important;
+    display: inline-block !important;
+    width: 1px !important;
+    height: 1.25em !important;
+    margin-left: 1.55rem !important;
+    vertical-align: -0.22em !important;
+    background: rgba(255, 255, 255, 0.28) !important;
+}
+
+.nav-item-group:hover .sub-link {
+    color: rgba(255, 255, 255, 0.58) !important;
+}
+
+.nav-item-group:hover .sub-link:hover {
+    color: rgba(255, 255, 255, 1) !important;
+}
+
+.sub-link {
+    font-family: 'Josefin Sans', sans-serif !important;
+    font-size: 11px !important;
+    letter-spacing: 0.32em !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    cursor: pointer !important;
+    transition: color 0.45s ease, letter-spacing 0.45s ease !important;
+}
+
+.nested-sub-menu .sub-link + .sub-link {
+    border-left: 1px solid rgba(255, 255, 255, 0.24) !important;
+    margin-left: 1.15rem !important;
+    padding-left: 1.35rem !important;
+}
+
+.region-link {
+    color: rgba(255, 255, 255, 0.44) !important;
+}
+
+.nested-nav-group:hover .region-link,
+.nested-nav-group.menu-open .region-link {
+    color: rgba(255, 255, 255, 0.52) !important;
+}
+
+.nested-nav-group:hover .region-link::after,
+.nested-nav-group.menu-open .region-link::after {
+    content: "" !important;
+    display: inline-block !important;
+    width: 18px !important;
+    height: 1px !important;
+    margin-left: 1.35rem !important;
+    vertical-align: 0.24em !important;
+    background: rgba(255, 255, 255, 0.28) !important;
+}
+
+.nested-nav-group:hover .nested-sub-menu .sub-link,
+.nested-nav-group.menu-open .nested-sub-menu .sub-link {
+    color: rgba(255, 255, 255, 0.78) !important;
+}
+
+.sub-link:hover {
+    color: rgba(255, 255, 255, 1) !important;
+    letter-spacing: 0.36em !important;
+}
+
+.main-trigger {
+    cursor: pointer !important;
+}
+   @media (max-width: 768px) {
+
+  /* 1. SCROLL VIEWS RE-ENGINE: SEAMLESS VERTICAL FLUSH CONTINUOUS FEED */
+    .snap-container {
+        height: auto !important;
+        overflow-y: visible !important;
+        scroll-snap-type: none !important; 
+    }
+
+    /* Sets bounds to an exact 16:10 box spanning 100% of mobile layout width */
+    .snap-container section {
+        height: 62.5vw !important;        /* Explicit proportional tracking height (100vw / (16/10)) */
+        width: 100vw !important;
+        display: block !important;
+        position: relative !important;
+        background-color: #000 !important;
+        opacity: 1 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        content-visibility: auto !important;
+        contain-intrinsic-size: 100vw 62.5vw !important;
+    }
+
+    .snap-container section .home-img-2 {
+        display: none !important;
+    }
+
+    /* MOBILE FILL ENGINE: Forces ultra-wide panoramic files to overshoot and crop-fill the frame box */
+    .snap-container section .media-stage,
+    .snap-container section .img-layer,
+    .snap-container section .img-plate,
+    .snap-container section .glass-wall {
+        position: absolute !important;
+        inset: 0 !important; 
+        width: 100vw !important;
+        height: 100% !important;
+        min-width: 100% !important;
+        min-height: 100% !important;
+        max-width: none !important;    
+        max-height: none !important;   
+        object-fit: cover !important;  /* Locks horizontal cropping overshoots on panoramas */
+        margin: 0 !important;
+    }
+
+    .snap-container section .media-stage::after {
+        content: "" !important;
+        position: absolute !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        height: 54% !important;
+        z-index: 45 !important;
+        pointer-events: none !important;
+        background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 0.5) 0%,
+            rgba(0, 0, 0, 0.26) 42%,
+            rgba(0, 0, 0, 0.08) 72%,
+            transparent 100%
+        ) !important;
+    }
+
+    /* 2. LABELS MINIFICATION PROFILE: Scales text down elegantly inside layout cards */
+    .snap-container section .caption-block {
+        position: absolute !important;
+        left: 1.15rem !important;
+        right: 1.15rem !important;
+        bottom: 0.95rem !important;
+        top: auto !important;
+        z-index: 60 !important;
+        opacity: 0.82 !important;
+        max-width: calc(100vw - 2.3rem) !important;
+    }
+
+    .snap-container section .archive-title {
+        font-family: 'Cormorant Garamond', serif !important;
+        font-style: italic !important;
+        font-weight: 300 !important;
+        font-size: clamp(13px, 4vw, 16px) !important;
+        letter-spacing: 0.08em !important;
+        line-height: 1.18 !important;
+        margin-bottom: 2px !important;
+        transform: none !important;
+        text-transform: uppercase !important;
+        color: rgba(255, 255, 255, 0.82) !important;
+        text-shadow: 0 1px 16px rgba(0, 0, 0, 0.88) !important;
+        overflow-wrap: anywhere !important;
+    }
+
+    .snap-container section .native-name {
+        font-size: 8.5px !important;
+        letter-spacing: 0.14em !important;
+        margin-bottom: 0.18rem !important;
+        color: rgba(255, 255, 255, 0.48) !important;
+        text-shadow: 0 1px 14px rgba(0, 0, 0, 0.82) !important;
+    }
+
+    /* 3. MAIN DETAIL VIEW LAYOUT ENGINE RE-FLOW */
+    #layer-detail:not(.hidden) {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: #000 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow-y: auto !important; 
+        -webkit-overflow-scrolling: touch !important;
+        padding-top: 4.8rem !important; 
+        padding-bottom: 14rem !important; 
+        z-index: 400 !important;
+    }
+
+    #layer-detail .exhibition-frame {
+        min-height: auto !important;
+        height: auto !important;
+        width: 100vw !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        padding-top: 0 !important;
+    }
+
+    #layer-detail .hero-wrapper {
+        height: auto !important;
+        width: 100vw !important;
+        padding: 0 1rem !important;
+        margin: 0 auto !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    #layer-detail #main-hero-img {
+        width: 100% !important;
+        height: auto !important;
+        max-height: 66vh !important; 
+        object-fit: contain !important;
+        box-shadow: 0 15px 45px rgba(0,0,0,0.8) !important;
+        cursor: zoom-in !important;
+    }
+
+    body.mobile-viewer-active {
+        overflow: hidden !important;
+        touch-action: none !important;
+    }
+
+    .mobile-image-viewer {
+        position: fixed !important;
+        inset: 0 !important;
+        z-index: 1200 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: #000 !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        transition: opacity 0.22s ease !important;
+        touch-action: pan-y !important;
+    }
+
+    .mobile-image-viewer.is-open {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+
+    .mobile-viewer-img {
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: none !important;
+        max-height: none !important;
+        object-fit: contain !important;
+        padding: 3.8rem 0.75rem 6.8rem !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+    }
+
+    .mobile-viewer-close {
+        position: fixed !important;
+        top: 1.15rem !important;
+        right: 1.1rem !important;
+        z-index: 1220 !important;
+        font-family: 'Josefin Sans', sans-serif !important;
+        font-size: 10px !important;
+        letter-spacing: 0.28em !important;
+        color: rgba(255, 255, 255, 0.72) !important;
+        background: transparent !important;
+        border: 0 !important;
+        padding: 0.7rem 0 0.7rem 0.7rem !important;
+    }
+
+    .mobile-viewer-nav {
+        position: fixed !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        z-index: 1220 !important;
+        width: 3rem !important;
+        height: 4rem !important;
+        border: 0 !important;
+        background: transparent !important;
+        color: rgba(255, 255, 255, 0.42) !important;
+        font-family: Georgia, serif !important;
+        font-size: 42px !important;
+        line-height: 1 !important;
+    }
+
+    .mobile-viewer-prev { left: 0.15rem !important; }
+    .mobile-viewer-next { right: 0.15rem !important; }
+
+    .mobile-viewer-caption {
+        position: fixed !important;
+        left: 1.15rem !important;
+        right: 1.15rem !important;
+        bottom: 2.1rem !important;
+        z-index: 1220 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.32rem !important;
+        pointer-events: none !important;
+    }
+
+    .mobile-viewer-native,
+    .mobile-viewer-title {
+        font-family: 'Cormorant Garamond', serif !important;
+        font-style: italic !important;
+        font-weight: 300 !important;
+        text-transform: uppercase !important;
+        color: rgba(255, 255, 255, 0.72) !important;
+        text-shadow: 0 1px 18px rgba(0, 0, 0, 0.9) !important;
+    }
+
+    .mobile-viewer-native {
+        font-size: 12px !important;
+        letter-spacing: 0.22em !important;
+        color: rgba(255, 255, 255, 0.48) !important;
+    }
+
+    .mobile-viewer-title {
+        font-size: 19px !important;
+        letter-spacing: 0.13em !important;
+        line-height: 1.1 !important;
+    }
+
+    /* 4. DETAIL LABELS PLAQUE SCALE */
+    #layer-detail .exhibition-plaque {
+        position: relative !important;
+        bottom: auto !important;
+        left: auto !important;
+        transform: none !important;
+        width: 100vw !important;
+        margin-top: 1.1rem !important; 
+        text-align: left !important;
+        padding: 0 1.5rem !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.2rem !important;
+    }
+
+    #layer-detail .native-name {
+        font-size: 10px !important;
+        letter-spacing: 0.2em !important;
+        color: rgba(255, 255, 255, 0.28) !important;
+        line-height: 1.2 !important;
+    }
+
+    #layer-detail .english-name {
+        font-size: 15px !important;
+        letter-spacing: 0.14em !important;
+        line-height: 1.3 !important;
+        color: rgba(255, 255, 255, 0.68) !important;
+        margin-top: 0.1rem !important;
+    }
+
+    /* 5. RE-ALIGN DETAIL NARRATIVE ACCORDION FIELD */
+    #layer-detail .about-section {
+        width: 100vw !important;
+        max-width: 100% !important;
+        margin: 5rem 0 0 0 !important;
+        padding: 0 1.5rem !important;
+        text-align: left !important;
+    }
+    #layer-detail .about-text {
+        font-size: 16px !important;
+        line-height: 1.6 !important;
+        color: rgba(255, 255, 255, 0.75) !important;
+    }
+
+    /* 6. IMAGE CALLOUT ANALYSIS SWIPE STRIP */
+    #layer-detail .texture-strip {
+        display: flex !important;
+        flex-direction: row !important; 
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important; 
+        -webkit-overflow-scrolling: touch !important;
+        width: 100vw !important;
+        gap: 1.2rem !important;
+        margin: 2.5rem 0 0 0 !important;
+        padding: 0 1.5rem 1rem 1.5rem !important;
+    }
+    #layer-detail .sample-box {
+        flex: 0 0 110px !important; 
+        width: 110px !important;
+        gap: 0.5rem !important;
+    }
+    #layer-detail .sample-img {
+        width: 110px !important;
+        height: 110px !important;
+        border-radius: 2px !important;
+    }
+    #layer-detail .sample-label {
+        font-size: 9px !important;
+        text-align: left !important;
+        letter-spacing: 0.15em !important;
+    }
+
+    /* 7. SIDE NAVIGATION SWITCH CHEVRONS */
+    #layer-detail .side-nav {
+        font-size: 28px !important;
+        width: 38px !important;
+        height: 38px !important;
+        top: 1.1rem !important; 
+        background: rgba(0, 0, 0, 0.35) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        opacity: 0.48 !important;
+        z-index: 500 !important;
+    }
+    #layer-detail .side-nav.left-0 {
+        left: auto !important;
+        right: 4.4rem !important;
+    }
+    #layer-detail .side-nav.right-0 { right: 1rem !important; }
+
+    /* 8. HUD CONTAINER REDUCTION PROFILE */
+    .bottom-hud {
+        padding: 4.5rem 1.15rem 1.15rem 1.15rem !important;
+        height: auto !important;
+        background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 0.72) 0%,
+            rgba(0, 0, 0, 0.48) 42%,
+            rgba(0, 0, 0, 0.18) 74%,
+            transparent 100%
+        ) !important;
+        z-index: 850 !important;
+    }
+    .hud-line { display: none !important; }
+    .hud-main {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.5rem !important;
+    }
+    .hud-main > .flex {
+        gap: 1.65rem !important;
+    }
+    .cinema-name {
+        font-size: 13px !important;
+        letter-spacing: 0.22em !important;
+        opacity: 0.58 !important;
+        line-height: 1.35 !important;
+        text-shadow: 0 1px 18px rgba(0, 0, 0, 0.92) !important;
+    }
+    .nav-group { gap: 1.5rem !important; }
+    .nav-link {
+        font-size: 9.5px !important;
+        letter-spacing: 0.22em !important;
+        opacity: 0.68 !important;
+        text-shadow: 0 1px 16px rgba(0, 0, 0, 0.92) !important;
+    }
+    .nav-tier-container { gap: 1.2rem !important; font-size: 10px !important; margin-bottom: 0.5rem !important; }
+    
+    #global-back {
+        top: 1.25rem !important;
+        left: 1.25rem !important;
+        font-size: 11px !important;
+        letter-spacing: 0.34em !important;
+    }
+    body[data-layer="detail"] #global-back {
+        top: 1.25rem !important;
+        left: 1.25rem !important;
+        padding: 0.4rem 0.8rem 0.4rem 0 !important;
+    }
+    .scroll-rail { right: 1rem !important; }
+
+    /* 9. ABOUT OVERLAY MODEL MORPH */
+    .about-split-container {
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+        align-items: flex-start !important;
+        padding: 2rem 1rem !important;
+        max-height: 85vh !important;
+        overflow-y: auto !important; 
+    }
+    .about-left-col {
+        flex-direction: row !important;
+        width: 100% !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding-bottom: 0.5rem !important;
+        min-width: 100% !important;
+    }
+    .about-icons-group { flex-direction: row !important; gap: 1.5rem !important; }
+    .about-close-trigger { writing-mode: horizontal-tb !important; transform: none !important; margin-top: 0 !important; }
+    .about-divider-line { width: 100% !important; height: 1px !important; align-self: auto !important; }
+    .about-right-col { gap: 1.2rem !important; }
+    .about-right-col p { font-size: 16px !important; line-height: 1.6 !important; color: rgba(255, 255, 255, 0.92) !important; }
+    .about-signature { font-size: 19px !important; }
+    /* MOBILE OVERRIDE FOR SCROLLING PREVIEWS */
+    #layer-home img, 
+    #layer-location img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
+    /* ==========================================================================
+       VERTICAL NAVIGATION ACCORDION (Mobile Overlay Layer Controls)
+       ========================================================================== */
+    #mobile-nav-drawer {
+        position: fixed !important;
+        bottom: 5.9rem !important;
+        left: 1rem !important;
+        right: 1rem !important;
+        width: auto !important;
+        max-height: min(64vh, 28rem) !important;
+        overflow-y: auto !important;
+        background: linear-gradient(
+            to bottom,
+            rgba(12, 12, 12, 0.44),
+            rgba(0, 0, 0, 0.58)
+        ) !important;
+        backdrop-filter: blur(24px) saturate(0.82) !important;
+        -webkit-backdrop-filter: blur(24px) saturate(0.82) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-bottom: 0 !important;
+        box-shadow: 0 -12px 34px rgba(0, 0, 0, 0.18) !important;
+        transition: transform 0.42s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.3s ease !important;
+        z-index: 900 !important;
+    }
+
+    .mobile-nav-drawer-hidden {
+        transform: translateY(20px) !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+
+    .mobile-nav-drawer-active {
+        transform: translateY(0) !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+
+    .mobile-drawer-inner {
+        padding: 1.2rem 1.25rem 1.25rem !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.9rem !important;
+    }
+
+    .mobile-parent-toggle {
+        font-family: 'Josefin Sans', sans-serif !important;
+        font-size: 10px !important;
+        letter-spacing: 0.28em !important;
+        color: rgba(255, 255, 255, 0.72) !important;
+        padding-bottom: 0.55rem !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.045) !important;
+        cursor: pointer !important;
+    }
+
+    .mobile-child-links {
+        max-height: 0 !important;
+        overflow: hidden !important;
+        transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.76rem !important;
+        padding-left: 0.25rem !important;
+    }
+
+    .mobile-menu-section.accordion-active .mobile-child-links {
+        max-height: 180px !important;
+        margin-top: 1rem !important;
+    }
+
+    .mobile-sub-link {
+        font-family: 'Josefin Sans', sans-serif !important;
+        font-size: 8.5px !important;
+        letter-spacing: 0.13em !important;
+        color: rgba(255, 255, 255, 0.54) !important;
+        text-transform: uppercase !important;
+        line-height: 1.45 !important;
+    }
+
+    .mobile-region-label {
+        font-family: 'Josefin Sans', sans-serif !important;
+        font-size: 8.5px !important;
+        letter-spacing: 0.2em !important;
+        color: rgba(255, 255, 255, 0.42) !important;
+        text-transform: uppercase !important;
+    }
+}

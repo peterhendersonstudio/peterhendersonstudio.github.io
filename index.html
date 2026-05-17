@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peter Henderson Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/styles.css?v=20260517-18">
+</head>
+<body class="bg-black">
+
+    <div id="global-back" onclick="handleBack()">← BACK</div>
+    <div class="scroll-rail"><div id="progress-bar"></div></div>
+
+    <div class="bottom-hud">
+        <div id="mobile-nav-drawer" class="mobile-nav-drawer-hidden md:hidden"></div>
+        
+        <div class="hud-line"></div>
+        <div class="hud-main">
+            <h1 class="cinema-name" onclick="showHome()">PETER HENDERSON STUDIO</h1>
+            <div class="flex items-center gap-[2rem] md:gap-[3.5rem]">
+                <div id="portfolio-navigation-system" class="hidden md:flex items-center gap-10 text-right"></div>
+                <span id="mobile-nav-trigger" class="nav-link md:hidden cursor-pointer" onclick="toggleMobileMenu()">MENU</span>
+                <span class="nav-link cursor-pointer" onclick="toggleAboutModal(true)">ABOUT</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="layer-home" class="snap-container"></div>
+    <div id="layer-location" class="snap-container hidden"></div>
+    <div id="layer-detail" class="hidden">
+        <div class="side-nav left-0" onclick="navigateDetail(-1)">‹</div>
+        <div class="side-nav right-0" onclick="navigateDetail(1)">›</div>
+        <div class="exhibition-frame">
+            <div id="detail-hero-wrapper" class="hero-wrapper"></div>
+            
+            <div id="plaque-container" class="exhibition-plaque">
+                <span id="plaque-native" class="native-name"></span>
+                <h2 id="plaque-english" class="english-name"></h2>
+            </div>
+
+            <div id="detail-about" class="about-section"></div>
+            <div id="detail-texture-analysis" class="w-full"></div>
+        </div>
+    </div>
+
+    <div id="mobile-image-viewer" class="mobile-image-viewer" aria-hidden="true">
+        <button class="mobile-viewer-close" type="button" onclick="closeMobileImageViewer()">CLOSE</button>
+        <button class="mobile-viewer-nav mobile-viewer-prev" type="button" onclick="navigateMobileImageViewer(-1)">‹</button>
+        <img id="mobile-viewer-img" class="mobile-viewer-img" alt="">
+        <button class="mobile-viewer-nav mobile-viewer-next" type="button" onclick="navigateMobileImageViewer(1)">›</button>
+        <div class="mobile-viewer-caption">
+            <span id="mobile-viewer-native" class="mobile-viewer-native"></span>
+            <span id="mobile-viewer-title" class="mobile-viewer-title"></span>
+        </div>
+    </div>
+
+    <script src="data/archive.js?v=20260517-18"></script>
+    <script src="js/app.js?v=20260517-18"></script>
+   <div id="about-overlay" class="about-overlay-layer" onclick="toggleAboutModal(false)">
+        <div class="about-split-container" onclick="event.stopPropagation()">
+            
+            <div class="about-left-col">
+                <div class="about-icons-group">
+                    <a href="https://www.instagram.com/peterhendersonart/" target="_blank" class="about-social-icon" title="Instagram">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                    </a>
+                </div>
+                <span class="about-close-trigger" onclick="toggleAboutModal(false)">CLOSE</span>
+            </div>
+
+            <div class="about-divider-line"></div>
+
+            <div class="about-right-col">
+                <p>Based in New Zealand, my background is in painting, and my day job is in art education, with a teaching focus on a foundational approach to linear perspective. While studio drafting can often be a methodical process, photography, like plein air painting, is highly reactive. We’re presented with fleeting windows of changing light and movement, and we must decide what to do with them very quickly. The immediacy is what makes it so exciting to me.</p>
+                <p>Because of my formal artistic training, I often compose my photos with painting (and painters) in mind. This comes down to the way I expose, play with colour and tonality, and treat scale and perspective through my experiments of compositing multiple telephoto exposures into a single image.</p>
+                <p>My inspirations include George Inness, William Trost Richards, John Singer Sargent, Albert Bierstadt and the Hudson River School artists, as well as the large format cinematography of Ron Fricke, and of course, Ansel Adams.</p>
+                <p class="about-signature">Peter Henderson</p>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
