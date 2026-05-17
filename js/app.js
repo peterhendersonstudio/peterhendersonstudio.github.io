@@ -643,7 +643,7 @@ function navigateDetail(direction) {
 }
 
 function isMobileViewport() {
-    return window.matchMedia('(max-width: 768px)').matches;
+    return window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse)').matches;
 }
 
 function updateMobileImageViewer() {
@@ -660,6 +660,7 @@ function openMobileImageViewer(index = currentIndex) {
     currentIndex = index;
     updateMobileImageViewer();
     mobileImageViewer.classList.add('is-open');
+    mobileImageViewer.classList.remove('is-borderless');
     mobileImageViewer.setAttribute('aria-hidden', 'false');
     document.body.classList.add('mobile-viewer-active');
 }
@@ -667,8 +668,14 @@ function openMobileImageViewer(index = currentIndex) {
 function closeMobileImageViewer() {
     if (!mobileImageViewer) return;
     mobileImageViewer.classList.remove('is-open');
+    mobileImageViewer.classList.remove('is-borderless');
     mobileImageViewer.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('mobile-viewer-active');
+}
+
+function toggleMobileViewerChrome() {
+    if (!mobileImageViewer?.classList.contains('is-open')) return;
+    mobileImageViewer.classList.toggle('is-borderless');
 }
 
 function navigateMobileImageViewer(direction) {
@@ -693,8 +700,16 @@ if (mobileImageViewer) {
         const deltaY = touch.clientY - mobileViewerTouchStartY;
         if (Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4) {
             navigateMobileImageViewer(deltaX < 0 ? 1 : -1);
+            return;
+        }
+        if (event.target === mobileViewerImg && Math.abs(deltaX) < 12 && Math.abs(deltaY) < 12) {
+            toggleMobileViewerChrome();
         }
     }, { passive: true });
+
+    mobileViewerImg?.addEventListener('click', () => {
+        if (!('ontouchstart' in window)) toggleMobileViewerChrome();
+    });
 }
 
 // Global UI State Interactivity Handlers
@@ -741,6 +756,7 @@ Object.assign(window, {
     handleBack,
     navigateDetail,
     navigateMobileImageViewer,
+    toggleMobileViewerChrome,
     openDetailView,
     openMobileImageViewer,
     openPlateView,

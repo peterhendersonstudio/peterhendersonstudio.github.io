@@ -885,11 +885,13 @@ section .glass-wall {
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        background: #000 !important;
+        background: rgba(0, 0, 0, 0.78) !important;
+        backdrop-filter: blur(20px) saturate(0.82) !important;
+        -webkit-backdrop-filter: blur(20px) saturate(0.82) !important;
         opacity: 0 !important;
         pointer-events: none !important;
         transition: opacity 0.22s ease !important;
-        touch-action: pan-y !important;
+        touch-action: pan-y pinch-zoom !important;
     }
 
     .mobile-image-viewer.is-open {
@@ -906,6 +908,19 @@ section .glass-wall {
         padding: 3.8rem 0.75rem 6.8rem !important;
         user-select: none !important;
         -webkit-user-select: none !important;
+        transition: padding 0.24s ease !important;
+    }
+
+    .mobile-image-viewer.is-borderless .mobile-viewer-img {
+        padding: 0 !important;
+        object-fit: contain !important;
+    }
+
+    .mobile-image-viewer.is-borderless .mobile-viewer-close,
+    .mobile-image-viewer.is-borderless .mobile-viewer-nav,
+    .mobile-image-viewer.is-borderless .mobile-viewer-caption {
+        opacity: 0 !important;
+        pointer-events: none !important;
     }
 
     .mobile-viewer-close {
@@ -920,6 +935,7 @@ section .glass-wall {
         background: transparent !important;
         border: 0 !important;
         padding: 0.7rem 0 0.7rem 0.7rem !important;
+        transition: opacity 0.22s ease !important;
     }
 
     .mobile-viewer-nav {
@@ -935,6 +951,7 @@ section .glass-wall {
         font-family: Georgia, serif !important;
         font-size: 42px !important;
         line-height: 1 !important;
+        transition: opacity 0.22s ease !important;
     }
 
     .mobile-viewer-prev { left: 0.15rem !important; }
@@ -950,6 +967,7 @@ section .glass-wall {
         flex-direction: column !important;
         gap: 0.32rem !important;
         pointer-events: none !important;
+        transition: opacity 0.22s ease !important;
     }
 
     .mobile-viewer-native,
@@ -1234,5 +1252,62 @@ section .glass-wall {
         letter-spacing: 0.2em !important;
         color: rgba(255, 255, 255, 0.42) !important;
         text-transform: uppercase !important;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    body.mobile-viewer-active {
+        overflow: hidden !important;
+        touch-action: none !important;
+    }
+
+    .mobile-image-viewer {
+        position: fixed !important;
+        inset: 0 !important;
+        z-index: 1200 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: rgba(0, 0, 0, 0.78) !important;
+        backdrop-filter: blur(20px) saturate(0.82) !important;
+        -webkit-backdrop-filter: blur(20px) saturate(0.82) !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        transition: opacity 0.22s ease !important;
+        touch-action: pan-y pinch-zoom !important;
+    }
+
+    .mobile-image-viewer.is-open {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+
+    .mobile-viewer-img {
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-width: none !important;
+        max-height: none !important;
+        object-fit: contain !important;
+        padding: 3.8rem 0.75rem 6.8rem !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+        transition: padding 0.24s ease !important;
+    }
+
+    .mobile-image-viewer.is-borderless .mobile-viewer-img {
+        padding: 0 !important;
+    }
+
+    .mobile-image-viewer.is-borderless .mobile-viewer-close,
+    .mobile-image-viewer.is-borderless .mobile-viewer-nav,
+    .mobile-image-viewer.is-borderless .mobile-viewer-caption {
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+
+    .mobile-viewer-close,
+    .mobile-viewer-nav,
+    .mobile-viewer-caption {
+        transition: opacity 0.22s ease !important;
     }
 }
