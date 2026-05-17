@@ -39,6 +39,10 @@ document.addEventListener('keydown', e => {
     }
 });
 
+if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+}
+
 let rawSheetData = [];
 let curCat, curReg, curSub, currentAlbum, currentIndex, currentLayer = 'home';
 let archives = [];
@@ -65,13 +69,35 @@ const mobileViewerImg = document.getElementById('mobile-viewer-img');
 const mobileViewerNative = document.getElementById('mobile-viewer-native');
 const mobileViewerTitle = document.getElementById('mobile-viewer-title');
 
+function resetScrollPosition(container) {
+    if (!container) return;
+    container.scrollTop = 0;
+    container.scrollLeft = 0;
+    if (!container.classList.contains('hidden')) {
+        container.querySelector('section')?.scrollIntoView({ behavior: 'auto', block: 'start' });
+    }
+    updateProgress(container);
+}
+
+function resetPageScroll() {
+    window.scrollTo(0, 0);
+    [homeLayer, locLayer, detailLayer].forEach(resetScrollPosition);
+}
+
 function initializeArchive(data) {
     rawSheetData = data;
     processSheetData();
     renderHUD();
+    resetPageScroll();
     // Initialize with Landscape -> South Island active on first load
     filterGallery('Landscape', 'South Island');
+    requestAnimationFrame(resetPageScroll);
+    setTimeout(resetPageScroll, 80);
 }
+
+window.addEventListener('pageshow', () => {
+    requestAnimationFrame(resetPageScroll);
+});
 
 // Fetch and mount the archive data collection safely
 fetch('data/archive.json')
@@ -457,6 +483,7 @@ function renderHome() {
     homeLayer.innerHTML = html;
     setupHoverCrossfades();
     observeSections(homeLayer);
+    resetScrollPosition(homeLayer);
 }
 
 function enterLocation(folderId) {
@@ -490,8 +517,8 @@ function renderLocation(album) {
     });
     
     locLayer.innerHTML = html;
-    locLayer.scrollTop = 0;
     observeSections(locLayer);
+    resetScrollPosition(locLayer);
 }
 
 function setupHoverCrossfades() {
@@ -534,6 +561,7 @@ function switchLayer(layerName) {
 function showHome() {
     switchLayer('home');
     renderHome();
+    resetScrollPosition(homeLayer);
 }
 
 function openDetailView(index) {
@@ -555,6 +583,7 @@ function renderDetail(album, idx) {
     currentAlbum = album;
     currentIndex = idx;
     switchLayer('detail');
+    resetScrollPosition(detailLayer);
 
     const plate = album.plates[idx];
     const masterPath = getImagePath(album.imageFolder, getMasterFile(plate));
@@ -618,7 +647,10 @@ function handleBack() {
         closeMobileImageViewer();
         return;
     }
-    if (currentLayer === 'detail') switchLayer('location');
+    if (currentLayer === 'detail') {
+        switchLayer('location');
+        resetScrollPosition(locLayer);
+    }
     else if (currentLayer === 'location') {
         if (directBackFilter) {
             curCat = directBackFilter.cat;
@@ -628,9 +660,11 @@ function handleBack() {
             switchLayer('home');
             updateActiveNavigation();
             renderHome();
+            resetScrollPosition(homeLayer);
             return;
         }
         switchLayer('home');
+        resetScrollPosition(homeLayer);
     }
 }
 
