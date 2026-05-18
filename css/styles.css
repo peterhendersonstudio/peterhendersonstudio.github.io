@@ -298,26 +298,35 @@ section .glass-wall {
 
 .entry-cue {
     font-family: 'Josefin Sans', sans-serif;
-    font-size: 10.5px;
-    letter-spacing: 0.26em;
+    font-size: 10px;
+    letter-spacing: 0.22em;
     line-height: 1;
-    position: absolute;
-    left: 58vw;
-    bottom: 0.15rem;
-    margin: 0;
-    color: rgba(255, 255, 255, 0.62);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.78rem;
+    margin: 0.8rem 0 0;
+    color: rgba(255, 255, 255, 0.5);
     text-transform: uppercase;
     opacity: 0;
-    transform: translateX(6px);
+    transform: translateY(4px);
     transition: opacity 0.45s ease, transform 0.45s ease, color 0.45s ease;
     text-shadow: 0 1px 14px rgba(0, 0, 0, 0.86);
     white-space: nowrap;
 }
 
+.entry-cue::before {
+    content: "";
+    display: block;
+    width: 2.4rem;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
 section.is-active .entry-cue,
 section:hover .entry-cue {
     opacity: 0.76;
-    transform: translateX(0);
+    transform: translateY(0);
 }
 
 section:hover .entry-cue {
@@ -920,6 +929,11 @@ section:hover .entry-cue {
         letter-spacing: 0.18em !important;
         opacity: 0.62 !important;
         transform: none !important;
+    }
+
+    .snap-container section .entry-cue::before {
+        width: 1.35rem !important;
+        background: rgba(255, 255, 255, 0.24) !important;
     }
 
     .snap-container section:last-child .caption-block {

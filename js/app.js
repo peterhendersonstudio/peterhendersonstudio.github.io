@@ -377,7 +377,10 @@ function renderHUD() {
         desktopHtml += `<div class="sub-menu-drawer">`;
 
         if (isDirectCategory) {
-            desktopHtml += ``;
+            const directAlbum = archives.find(album => album.category === cat);
+            if (directAlbum) {
+                desktopHtml += `<span class="sub-link direct-category-link" onclick="filterGallery('${cat}', '${defaultSub}', '${defaultRegion}')"><span class="sub-link-native">${directAlbum.nativeName.toUpperCase()}</span><span class="sub-link-english">${directAlbum.title}</span></span>`;
+            }
         } else if (cat === 'Landscape' && subRegions.length > 0) {
             regions.forEach(reg => {
                 desktopHtml += `<span class="sub-link region-link" onclick="filterGallery('${cat}', '${defaultSub}', '')">${formatRegionLabel(reg)}</span>`;
@@ -525,7 +528,7 @@ function renderHome() {
             <div class="caption-block">
                 <p class="native-name">${album.nativeName}</p>
                 <h2 class="archive-title">${album.title}</h2>
-                <p class="entry-cue">VIEW ALBUM</p>
+                <p class="entry-cue">OPEN</p>
             </div>
         </section>`;
     });
@@ -563,7 +566,7 @@ function renderLocation(album) {
             <div class="caption-block">
                 <p class="native-name">${plate["Native Name"] || album.nativeName}</p>
                 <h2 class="archive-title">${plate["Exhibition Title"] || album.title} // ${formatRef(idx)}</h2>
-                <p class="entry-cue">VIEW IMAGE</p>
+                <p class="entry-cue">OPEN</p>
             </div>
         </section>`;
     });
