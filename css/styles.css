@@ -15,7 +15,7 @@ body {
 
 body.about-modal-active {
     overflow: hidden;
-    touch-action: pinch-zoom;
+    touch-action: pan-x pan-y pinch-zoom;
 }
 
 /* ==========================================================================
@@ -585,7 +585,7 @@ section:hover .entry-cue::before {
     pointer-events: none;
     transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     overscroll-behavior: contain;
-    touch-action: pinch-zoom;
+    touch-action: pan-x pan-y pinch-zoom;
 }
 .about-overlay-layer.visible { opacity: 1; pointer-events: auto; }
 
@@ -1329,6 +1329,7 @@ section:hover .entry-cue::before {
         max-height: 100dvh !important;
         padding: 4.4rem 1.25rem 2rem !important;
         overflow: hidden !important;
+        touch-action: pan-x pan-y pinch-zoom !important;
     }
     .about-split-container::before {
         top: 3.35rem !important;
@@ -1360,7 +1361,7 @@ section:hover .entry-cue::before {
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch !important;
         overscroll-behavior: contain !important;
-        touch-action: pan-y pinch-zoom !important;
+        touch-action: pan-x pan-y pinch-zoom !important;
         padding-right: 0.25rem !important;
     }
     .about-right-col p { font-size: 16px !important; line-height: 1.6 !important; color: rgba(255, 255, 255, 0.92) !important; }
