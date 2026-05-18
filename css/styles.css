@@ -344,6 +344,23 @@ section:hover .entry-cue::before {
 }
 
 @media (min-width: 769px) {
+    .snap-container section .entry-cue {
+        position: fixed;
+        right: clamp(21rem, 21vw, 30rem);
+        bottom: 3.55rem;
+        z-index: 130;
+        margin: 0;
+        opacity: 0;
+        transform: none;
+        pointer-events: none;
+    }
+
+    .snap-container section.is-active .entry-cue,
+    .snap-container section:hover .entry-cue {
+        opacity: 0.76;
+        transform: none;
+    }
+
     .snap-container section:last-child .caption-block {
         bottom: 9.4rem !important;
     }
