@@ -934,6 +934,7 @@ if (mobileImageViewer) {
 function toggleMobileMenu(forceState) {
     const drawer = document.getElementById('mobile-nav-drawer');
     const trigger = document.getElementById('mobile-nav-trigger');
+    const scrim = document.getElementById('mobile-nav-scrim');
     if (!drawer) return;
     
     const isOpen = drawer.classList.contains('mobile-nav-drawer-active');
@@ -942,10 +943,12 @@ function toggleMobileMenu(forceState) {
     if (nextState) {
         drawer.classList.remove('mobile-nav-drawer-hidden');
         drawer.classList.add('mobile-nav-drawer-active');
+        scrim?.classList.add('mobile-nav-scrim-active');
         if (trigger) trigger.textContent = 'CLOSE';
     } else {
         drawer.classList.remove('mobile-nav-drawer-active');
         drawer.classList.add('mobile-nav-drawer-hidden');
+        scrim?.classList.remove('mobile-nav-scrim-active');
         if (trigger) trigger.textContent = 'MENU';
     }
 }

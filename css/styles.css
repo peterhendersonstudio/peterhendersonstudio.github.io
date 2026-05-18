@@ -546,6 +546,10 @@ section:hover .entry-cue::before {
     display: none;
 }
 
+.mobile-nav-scrim {
+    display: none;
+}
+
 .mobile-image-viewer.is-loading .mobile-viewer-img {
     opacity: 0.78;
 }
@@ -1239,7 +1243,9 @@ section:hover .entry-cue::before {
     /* 8. HUD CONTAINER REDUCTION PROFILE */
     .bottom-hud {
         padding: 4.5rem 1.15rem 1.15rem 1.15rem !important;
+        min-height: 8.4rem !important;
         height: auto !important;
+        pointer-events: auto !important;
         background: linear-gradient(
             to top,
             rgba(0, 0, 0, 0.42) 0%,
@@ -1248,6 +1254,20 @@ section:hover .entry-cue::before {
             transparent 100%
         ) !important;
         z-index: 850 !important;
+    }
+
+    .mobile-nav-scrim {
+        position: fixed !important;
+        inset: 0 !important;
+        display: block !important;
+        z-index: 840 !important;
+        background: transparent !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+
+    .mobile-nav-scrim.mobile-nav-scrim-active {
+        pointer-events: auto !important;
     }
     .bottom-hud::before {
         height: 4.8rem !important;
