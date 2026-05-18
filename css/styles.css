@@ -65,6 +65,7 @@ body[data-layer="detail"] .bottom-hud {
     justify-content: flex-end;
     padding: 0 6.5rem 3.5rem 6.5rem;
     pointer-events: none;
+    isolation: isolate;
     background: linear-gradient(
         to top, 
         rgba(0,0,0,0.58) 0%, 
@@ -76,6 +77,27 @@ body[data-layer="detail"] .bottom-hud {
     );
 }
 
+.bottom-hud::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 6.5rem;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.62) 0%,
+        rgba(0, 0, 0, 0.42) 58%,
+        rgba(0, 0, 0, 0.12) 100%
+    );
+    backdrop-filter: blur(16px) saturate(0.8);
+    -webkit-backdrop-filter: blur(16px) saturate(0.8);
+    mask-image: linear-gradient(to top, #000 0%, #000 68%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to top, #000 0%, #000 68%, transparent 100%);
+}
+
 .hud-line {
     position: absolute;
     bottom: 6.5rem;
@@ -83,6 +105,7 @@ body[data-layer="detail"] .bottom-hud {
     right: 6.5rem;
     height: 1px;
     background: rgba(255, 255, 255, 0.13);
+    z-index: 1;
 }
 
 .nav-tier-container {
@@ -102,6 +125,8 @@ body[data-layer="detail"] .bottom-hud {
     align-items: center;
     width: 100%;
     pointer-events: auto;
+    position: relative;
+    z-index: 1;
 }
 
 .cinema-name {
@@ -253,6 +278,30 @@ section .glass-wall {
     color: rgba(255,255,255,0.96);
     margin: 0;
     -webkit-font-smoothing: antialiased;
+}
+
+.entry-cue {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.32em;
+    line-height: 1;
+    margin: 0.95rem 0 0;
+    color: rgba(255, 255, 255, 0.42);
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.45s ease, transform 0.45s ease, color 0.45s ease;
+    text-shadow: 0 1px 14px rgba(0, 0, 0, 0.86);
+}
+
+section.is-active .entry-cue,
+section:hover .entry-cue {
+    opacity: 0.76;
+    transform: translateY(0);
+}
+
+section:hover .entry-cue {
+    color: rgba(255, 255, 255, 0.74);
 }
 
 /* EXHIBITION DETAIL LAYOUT VIEW */
@@ -485,6 +534,8 @@ section .glass-wall {
     display: flex;
     align-items: stretch;
     gap: 3.5rem;
+    position: relative;
+    padding-top: 2.8rem;
     transform: translateY(20px);
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -492,13 +543,16 @@ section .glass-wall {
 
 .about-left-col {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 0;
-    min-width: 45px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    min-width: 0;
 }
-.about-icons-group { display: flex; flex-direction: column; gap: 1.8rem; }
+.about-icons-group { display: flex; flex-direction: row; gap: 1.8rem; }
 .about-social-icon {
     color: rgba(255, 255, 255, 0.4);
     width: 20px;
@@ -521,15 +575,15 @@ section .glass-wall {
     font-family: 'Josefin Sans', sans-serif;
     font-size: 10px;
     letter-spacing: 0.35em;
-    color: rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.42);
     cursor: pointer;
-    writing-mode: vertical-lr;
-    transform: rotate(180deg);
+    writing-mode: horizontal-tb;
+    transform: none;
     transition: color 0.3s ease;
-    margin-top: 2rem;
+    margin-top: 0;
 }
 .about-close-trigger:hover { color: rgba(255, 255, 255, 0.85); }
-.about-divider-line { width: 1px; background: rgba(255, 255, 255, 0.12); align-self: stretch; }
+.about-divider-line { display: none; }
 
 .about-right-col { flex: 1; display: flex; flex-direction: column; gap: 1.8rem; text-align: left; }
 .about-right-col p {
@@ -822,6 +876,13 @@ section .glass-wall {
         text-shadow: 0 1px 14px rgba(0, 0, 0, 0.82) !important;
     }
 
+    .snap-container section .entry-cue {
+        font-size: 7px !important;
+        letter-spacing: 0.22em !important;
+        margin-top: 0.45rem !important;
+        opacity: 0.42 !important;
+    }
+
     .snap-container section:last-child .caption-block {
         bottom: 6.3rem !important;
     }
@@ -1099,6 +1160,17 @@ section .glass-wall {
             transparent 100%
         ) !important;
         z-index: 850 !important;
+    }
+    .bottom-hud::before {
+        height: 100% !important;
+        backdrop-filter: blur(18px) saturate(0.82) !important;
+        -webkit-backdrop-filter: blur(18px) saturate(0.82) !important;
+        background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 0.68) 0%,
+            rgba(0, 0, 0, 0.46) 56%,
+            rgba(0, 0, 0, 0.08) 100%
+        ) !important;
     }
     .hud-line { display: none !important; }
     .hud-main {

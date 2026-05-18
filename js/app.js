@@ -62,6 +62,7 @@ let mobileViewerTranslateY = 0;
 let mobileViewerStartTranslateX = 0;
 let mobileViewerStartTranslateY = 0;
 let mobileViewerDidMove = false;
+let mobileViewerLastTap = 0;
 
 // DOM Anchors
 const homeLayer = document.getElementById('layer-home');
@@ -523,6 +524,7 @@ function renderHome() {
             <div class="caption-block">
                 <p class="native-name">${album.nativeName}</p>
                 <h2 class="archive-title">${album.title}</h2>
+                <p class="entry-cue">VIEW ALBUM</p>
             </div>
         </section>`;
     });
@@ -560,6 +562,7 @@ function renderLocation(album) {
             <div class="caption-block">
                 <p class="native-name">${plate["Native Name"] || album.nativeName}</p>
                 <h2 class="archive-title">${plate["Exhibition Title"] || album.title} // ${formatRef(idx)}</h2>
+                <p class="entry-cue">VIEW IMAGE</p>
             </div>
         </section>`;
     });
@@ -600,10 +603,16 @@ function switchLayer(layerName) {
         if (backBtn) backBtn.style.display = 'none';
     } else if (layerName === 'location') {
         locLayer.classList.remove('hidden');
-        if (backBtn) backBtn.style.display = 'block';
+        if (backBtn) {
+            backBtn.textContent = '← HOME';
+            backBtn.style.display = 'block';
+        }
     } else if (layerName === 'detail') {
         detailLayer.classList.remove('hidden');
-        if (backBtn) backBtn.style.display = 'block';
+        if (backBtn) {
+            backBtn.textContent = '← ALBUM';
+            backBtn.style.display = 'block';
+        }
     }
 }
 
@@ -748,6 +757,20 @@ function resetMobileViewerZoom() {
     mobileViewerScale = 1;
     mobileViewerTranslateX = 0;
     mobileViewerTranslateY = 0;
+    mobileViewerTouchStartDistance = 0;
+    applyMobileViewerTransform();
+}
+
+function setMobileViewerZoom(scale, originX = 0, originY = 0) {
+    const nextScale = Math.max(1, Math.min(4, scale));
+    mobileViewerScale = nextScale;
+    if (nextScale === 1) {
+        mobileViewerTranslateX = 0;
+        mobileViewerTranslateY = 0;
+    } else if (originX || originY) {
+        mobileViewerTranslateX = originX;
+        mobileViewerTranslateY = originY;
+    }
     applyMobileViewerTransform();
 }
 
@@ -801,6 +824,8 @@ if (mobileImageViewer) {
         if (event.touches.length === 2) {
             mobileViewerTouchStartDistance = getTouchDistance(event.touches);
             mobileViewerStartScale = mobileViewerScale;
+        } else {
+            mobileViewerTouchStartDistance = 0;
         }
     }, { passive: true });
 
@@ -811,12 +836,7 @@ if (mobileImageViewer) {
             mobileViewerDidMove = true;
             const distance = getTouchDistance(event.touches);
             if (!mobileViewerTouchStartDistance) return;
-            mobileViewerScale = Math.max(1, Math.min(4, mobileViewerStartScale * (distance / mobileViewerTouchStartDistance)));
-            if (mobileViewerScale === 1) {
-                mobileViewerTranslateX = 0;
-                mobileViewerTranslateY = 0;
-            }
-            applyMobileViewerTransform();
+            setMobileViewerZoom(mobileViewerStartScale * (distance / mobileViewerTouchStartDistance));
             return;
         }
 
@@ -834,12 +854,32 @@ if (mobileImageViewer) {
         const touch = event.changedTouches[0];
         const deltaX = touch.clientX - mobileViewerTouchStartX;
         const deltaY = touch.clientY - mobileViewerTouchStartY;
-        if (mobileViewerScale > 1) return;
+        if (mobileViewerScale > 1) {
+            mobileViewerTouchStartDistance = 0;
+            if (event.target === mobileViewerImg && !mobileViewerDidMove && Math.abs(deltaX) < 12 && Math.abs(deltaY) < 12) {
+                const now = Date.now();
+                if (now - mobileViewerLastTap < 320) {
+                    resetMobileViewerZoom();
+                    mobileViewerLastTap = 0;
+                } else {
+                    mobileViewerLastTap = now;
+                }
+            }
+            return;
+        }
         if (Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4) {
             navigateMobileImageViewer(deltaX < 0 ? 1 : -1);
             return;
         }
         if (event.target === mobileViewerImg && !mobileViewerDidMove && Math.abs(deltaX) < 12 && Math.abs(deltaY) < 12) {
+            const now = Date.now();
+            if (now - mobileViewerLastTap < 320) {
+                if (mobileViewerScale > 1) resetMobileViewerZoom();
+                else setMobileViewerZoom(2.35);
+                mobileViewerLastTap = 0;
+                return;
+            }
+            mobileViewerLastTap = now;
             toggleMobileViewerChrome();
         }
     }, { passive: true });
