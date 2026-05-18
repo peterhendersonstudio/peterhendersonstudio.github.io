@@ -81,6 +81,7 @@ const aboutDiv = document.getElementById('detail-about');
 const textureDiv = document.getElementById('detail-texture-analysis');
 const plaqueContainer = document.getElementById('plaque-container');
 const detailHeroWrapper = document.getElementById('detail-hero-wrapper');
+const hudEntryCue = document.getElementById('hud-entry-cue');
 const mobileImageViewer = document.getElementById('mobile-image-viewer');
 const mobileViewerImg = document.getElementById('mobile-viewer-img');
 const mobileViewerNative = document.getElementById('mobile-viewer-native');
@@ -349,6 +350,14 @@ function navigateSnapList(direction) {
 function openActiveSnapItem() {
     const section = getCenteredSnapItem(getActiveSnapContainer());
     if (section) section.click();
+}
+
+function updateHudEntryCue(layerName = currentLayer) {
+    if (!hudEntryCue) return;
+    const isSnapLayer = layerName === 'home' || layerName === 'location';
+    hudEntryCue.textContent = layerName === 'location' ? 'VIEW IMAGE' : 'VIEW ALBUM';
+    hudEntryCue.classList.toggle('is-visible', isSnapLayer);
+    hudEntryCue.setAttribute('aria-hidden', isSnapLayer ? 'false' : 'true');
 }
 
 [homeLayer, locLayer, detailLayer].forEach(layer => {
@@ -653,6 +662,7 @@ function switchLayer(layerName) {
     currentLayer = layerName;
     document.body.dataset.layer = layerName;
     document.body.classList.toggle('is-detail-open', layerName === 'detail');
+    updateHudEntryCue(layerName);
     homeLayer.classList.add('hidden');
     locLayer.classList.add('hidden');
     detailLayer.classList.add('hidden');

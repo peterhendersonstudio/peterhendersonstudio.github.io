@@ -164,6 +164,53 @@ body[data-layer="detail"] .bottom-hud {
 .nav-link.active { opacity: 0.9; }
 .nav-link:hover { opacity: 1; }
 
+.hud-entry-cue {
+    position: absolute;
+    right: clamp(21rem, 21vw, 30rem);
+    bottom: 3.5rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.62rem;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 9.5px;
+    letter-spacing: 0.24em;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.58);
+    text-transform: uppercase;
+    text-shadow: 0 1px 14px rgba(0, 0, 0, 0.86);
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, color 0.3s ease;
+    white-space: nowrap;
+}
+
+.hud-entry-cue::before {
+    content: "";
+    display: block;
+    width: 1.85rem;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.32);
+    transition: background 0.3s ease;
+}
+
+.hud-entry-cue.is-visible {
+    opacity: 0.76;
+    pointer-events: auto;
+}
+
+.hud-entry-cue:hover {
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.hud-entry-cue:hover::before {
+    background: rgba(255, 255, 255, 0.52);
+}
+
 /* THE SNAP SCROLL CONTAINER ARBITER */
 .snap-container { 
     height: 100vh; 
@@ -345,20 +392,7 @@ section:hover .entry-cue::before {
 
 @media (min-width: 769px) {
     .snap-container section .entry-cue {
-        position: fixed;
-        right: clamp(21rem, 21vw, 30rem);
-        bottom: 3.55rem;
-        z-index: 130;
-        margin: 0;
-        opacity: 0;
-        transform: none;
-        pointer-events: none;
-    }
-
-    .snap-container section.is-active .entry-cue,
-    .snap-container section:hover .entry-cue {
-        opacity: 0.76;
-        transform: none;
+        display: none !important;
     }
 
     .snap-container section:last-child .caption-block {
@@ -878,6 +912,10 @@ section:hover .entry-cue::before {
     color: rgba(255, 255, 255, 0.98) !important;
 }
    @media (max-width: 768px) {
+
+    .hud-entry-cue {
+        display: none !important;
+    }
 
   /* 1. SCROLL VIEWS RE-ENGINE: SEAMLESS VERTICAL FLUSH CONTINUOUS FEED */
     .snap-container {
@@ -1545,5 +1583,81 @@ section:hover .entry-cue::before {
     .mobile-viewer-nav,
     .mobile-viewer-caption {
         transition: opacity 0.22s ease !important;
+    }
+
+    .mobile-viewer-close {
+        position: fixed !important;
+        top: max(1rem, env(safe-area-inset-top)) !important;
+        right: max(1rem, env(safe-area-inset-right)) !important;
+        z-index: 1220 !important;
+        font-family: 'Josefin Sans', sans-serif !important;
+        font-size: 10px !important;
+        letter-spacing: 0.28em !important;
+        color: rgba(255, 255, 255, 0.72) !important;
+        background: transparent !important;
+        border: 0 !important;
+        padding: 0.7rem 0 0.7rem 0.7rem !important;
+    }
+
+    .mobile-viewer-nav {
+        position: fixed !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        z-index: 1220 !important;
+        width: 3rem !important;
+        height: 4rem !important;
+        border: 0 !important;
+        background: transparent !important;
+        color: rgba(255, 255, 255, 0.42) !important;
+        font-family: Georgia, serif !important;
+        font-size: 42px !important;
+        line-height: 1 !important;
+    }
+
+    .mobile-viewer-prev { left: max(0.15rem, env(safe-area-inset-left)) !important; }
+    .mobile-viewer-next { right: max(0.15rem, env(safe-area-inset-right)) !important; }
+
+    .mobile-viewer-caption {
+        position: fixed !important;
+        left: max(1.15rem, env(safe-area-inset-left)) !important;
+        right: max(1.15rem, env(safe-area-inset-right)) !important;
+        bottom: max(2.1rem, env(safe-area-inset-bottom)) !important;
+        z-index: 1220 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.32rem !important;
+        pointer-events: none !important;
+    }
+
+    .mobile-viewer-native,
+    .mobile-viewer-title {
+        font-family: 'Cormorant Garamond', serif !important;
+        font-style: italic !important;
+        font-weight: 300 !important;
+        text-transform: uppercase !important;
+        color: rgba(255, 255, 255, 0.72) !important;
+        text-shadow: 0 1px 18px rgba(0, 0, 0, 0.9) !important;
+    }
+
+    .mobile-viewer-native {
+        font-size: 12px !important;
+        letter-spacing: 0.22em !important;
+        color: rgba(255, 255, 255, 0.48) !important;
+    }
+
+    .mobile-viewer-title {
+        font-size: clamp(17px, 3vw, 22px) !important;
+        letter-spacing: 0.13em !important;
+        line-height: 1.12 !important;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) and (orientation: landscape) {
+    .mobile-viewer-img {
+        padding: max(2.7rem, env(safe-area-inset-top)) 4.6rem max(3rem, env(safe-area-inset-bottom)) !important;
+    }
+
+    .mobile-image-viewer.is-borderless .mobile-viewer-img {
+        padding: 0 !important;
     }
 }

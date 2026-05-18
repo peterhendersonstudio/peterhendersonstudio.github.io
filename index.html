@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Peter Henderson Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="css/styles.css?v=20260517-39">
+<link rel="stylesheet" href="css/styles.css?v=20260517-40">
 </head>
 <body class="bg-black">
 
@@ -19,6 +19,7 @@
         <div id="mobile-nav-drawer" class="mobile-nav-drawer-hidden md:hidden"></div>
         
         <div class="hud-line"></div>
+        <button id="hud-entry-cue" class="hud-entry-cue" type="button" onclick="openActiveSnapItem()" aria-hidden="true">VIEW ALBUM</button>
         <div class="hud-main">
             <h1 class="cinema-name" onclick="showHome()">PETER HENDERSON STUDIO</h1>
             <div class="flex items-center gap-[2rem] md:gap-[3.5rem]">
@@ -59,8 +60,8 @@
         </div>
     </div>
 
-    <script src="data/archive.js?v=20260517-39"></script>
-    <script src="js/app.js?v=20260517-39"></script>
+    <script src="data/archive.js?v=20260517-40"></script>
+    <script src="js/app.js?v=20260517-40"></script>
    <div id="about-overlay" class="about-overlay-layer" onclick="toggleAboutModal(false)">
         <div class="about-split-container" onclick="event.stopPropagation()">
             
