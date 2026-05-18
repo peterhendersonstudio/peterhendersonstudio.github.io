@@ -964,7 +964,12 @@ function toggleMobileAccordion(element) {
 function toggleAboutModal(show) {
     const overlay = document.getElementById('about-overlay');
     if (!overlay) return;
-    overlay.classList.toggle('visible', Boolean(show));
+    const shouldShow = Boolean(show);
+    overlay.classList.toggle('visible', shouldShow);
+    document.body.classList.toggle('about-modal-active', shouldShow);
+    if (shouldShow) {
+        overlay.querySelector('.about-right-col')?.scrollTo(0, 0);
+    }
 }
 
 Object.assign(window, {
