@@ -63,6 +63,7 @@ let mobileViewerStartTranslateX = 0;
 let mobileViewerStartTranslateY = 0;
 let mobileViewerDidMove = false;
 let mobileViewerLastTap = 0;
+let mobileViewerIsLoading = false;
 
 // DOM Anchors
 const homeLayer = document.getElementById('layer-home');
@@ -741,11 +742,34 @@ function isMobileViewport() {
 function updateMobileImageViewer() {
     if (!currentAlbum || !mobileViewerImg) return;
     const plate = currentAlbum.plates[currentIndex];
-    mobileViewerImg.src = getImagePath(currentAlbum.imageFolder, getMasterFile(plate));
+    const nextSrc = getImagePath(currentAlbum.imageFolder, getMasterFile(plate));
+    mobileViewerIsLoading = true;
+    mobileImageViewer?.classList.add('is-loading');
+    mobileViewerImg.onload = () => {
+        mobileViewerIsLoading = false;
+        mobileImageViewer?.classList.remove('is-loading');
+        preloadMobileViewerNeighbors();
+    };
+    mobileViewerImg.onerror = () => {
+        mobileViewerIsLoading = false;
+        mobileImageViewer?.classList.remove('is-loading');
+    };
+    mobileViewerImg.src = nextSrc;
+    if (mobileViewerImg.complete) mobileViewerImg.onload();
     mobileViewerImg.alt = plate["Exhibition Title"] || currentAlbum.title;
     resetMobileViewerZoom();
     if (mobileViewerNative) mobileViewerNative.textContent = plate["Native Name"] || currentAlbum.nativeName;
     if (mobileViewerTitle) mobileViewerTitle.textContent = `${plate["Exhibition Title"] || currentAlbum.title} // ${formatRef(currentIndex)}`;
+}
+
+function preloadMobileViewerNeighbors() {
+    if (!currentAlbum) return;
+    [-1, 1].forEach(direction => {
+        let idx = currentIndex + direction;
+        if (idx < 0) idx = currentAlbum.plates.length - 1;
+        else if (idx >= currentAlbum.plates.length) idx = 0;
+        preloadImage(getAlbumImagePath(currentAlbum, currentAlbum.plates[idx], 'master'));
+    });
 }
 
 function applyMobileViewerTransform() {
@@ -805,7 +829,7 @@ function toggleMobileViewerChrome() {
 }
 
 function navigateMobileImageViewer(direction) {
-    if (!currentAlbum) return;
+    if (!currentAlbum || mobileViewerIsLoading) return;
     let nextIdx = currentIndex + direction;
     if (nextIdx < 0) nextIdx = currentAlbum.plates.length - 1;
     else if (nextIdx >= currentAlbum.plates.length) nextIdx = 0;
@@ -865,6 +889,10 @@ if (mobileImageViewer) {
                     mobileViewerLastTap = now;
                 }
             }
+            return;
+        }
+        if (deltaY > 72 && deltaY > Math.abs(deltaX) * 1.25) {
+            closeMobileImageViewer();
             return;
         }
         if (Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4) {

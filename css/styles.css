@@ -68,11 +68,9 @@ body[data-layer="detail"] .bottom-hud {
     isolation: isolate;
     background: linear-gradient(
         to top, 
-        rgba(0,0,0,0.58) 0%, 
-        rgba(0,0,0,0.5) 22%, 
-        rgba(0,0,0,0.35) 45%, 
-        rgba(0,0,0,0.17) 70%, 
-        rgba(0,0,0,0.04) 88%, 
+        rgba(0,0,0,0.38) 0%,
+        rgba(0,0,0,0.28) 32%,
+        rgba(0,0,0,0.12) 64%,
         transparent 100%
     );
 }
@@ -83,17 +81,17 @@ body[data-layer="detail"] .bottom-hud {
     left: 0;
     right: 0;
     bottom: 0;
-    height: 6.5rem;
+    height: 4.2rem;
     z-index: 0;
     pointer-events: none;
     background: linear-gradient(
         to top,
-        rgba(0, 0, 0, 0.62) 0%,
-        rgba(0, 0, 0, 0.42) 58%,
-        rgba(0, 0, 0, 0.12) 100%
+        rgba(0, 0, 0, 0.3) 0%,
+        rgba(0, 0, 0, 0.16) 58%,
+        transparent 100%
     );
-    backdrop-filter: blur(16px) saturate(0.8);
-    -webkit-backdrop-filter: blur(16px) saturate(0.8);
+    backdrop-filter: blur(6px) saturate(0.85);
+    -webkit-backdrop-filter: blur(6px) saturate(0.85);
     mask-image: linear-gradient(to top, #000 0%, #000 68%, transparent 100%);
     -webkit-mask-image: linear-gradient(to top, #000 0%, #000 68%, transparent 100%);
 }
@@ -191,6 +189,24 @@ section.is-active .caption-block {
     opacity: 1;
 }
 
+@media (min-width: 769px) {
+    .snap-container section:not(.is-active) .media-stage {
+        filter: blur(7px);
+        transform: scale(1.018);
+        opacity: 0.72;
+    }
+
+    .snap-container section.is-active .media-stage {
+        filter: blur(0);
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    .snap-container section .media-stage {
+        transition: filter 0.75s ease, transform 0.75s ease, opacity 0.75s ease;
+    }
+}
+
 /* ==========================================================================
    DESKTOP VIEWPORT LAYOUTS (Full-Bleed Edge-to-Edge Architecture)
    ========================================================================== */
@@ -282,22 +298,26 @@ section .glass-wall {
 
 .entry-cue {
     font-family: 'Josefin Sans', sans-serif;
-    font-size: 9px;
-    letter-spacing: 0.32em;
+    font-size: 10.5px;
+    letter-spacing: 0.26em;
     line-height: 1;
-    margin: 0.95rem 0 0;
-    color: rgba(255, 255, 255, 0.42);
+    position: absolute;
+    left: 58vw;
+    bottom: 0.15rem;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.62);
     text-transform: uppercase;
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateX(6px);
     transition: opacity 0.45s ease, transform 0.45s ease, color 0.45s ease;
     text-shadow: 0 1px 14px rgba(0, 0, 0, 0.86);
+    white-space: nowrap;
 }
 
 section.is-active .entry-cue,
 section:hover .entry-cue {
     opacity: 0.76;
-    transform: translateY(0);
+    transform: translateX(0);
 }
 
 section:hover .entry-cue {
@@ -500,6 +520,15 @@ section:hover .entry-cue {
     display: none;
 }
 
+.mobile-image-viewer.is-loading .mobile-viewer-img {
+    opacity: 0.78;
+}
+
+.mobile-image-viewer.is-loading .mobile-viewer-nav {
+    opacity: 0.16 !important;
+    pointer-events: none !important;
+}
+
 .scroll-rail {
     position: fixed;
     right: 3.5rem;
@@ -529,8 +558,8 @@ section:hover .entry-cue {
 .about-overlay-layer.visible { opacity: 1; pointer-events: auto; }
 
 .about-split-container {
-    max-width: 920px;
-    width: 90vw;
+    max-width: 760px;
+    width: 78vw;
     display: flex;
     align-items: stretch;
     gap: 3.5rem;
@@ -585,7 +614,7 @@ section:hover .entry-cue {
 .about-close-trigger:hover { color: rgba(255, 255, 255, 0.85); }
 .about-divider-line { display: none; }
 
-.about-right-col { flex: 1; display: flex; flex-direction: column; gap: 1.8rem; text-align: left; }
+.about-right-col { flex: 1; display: flex; flex-direction: column; gap: 1.8rem; text-align: left; max-width: 680px; }
 .about-right-col p {
     font-family: 'Cormorant Garamond', serif;
     font-size: 21px;
@@ -658,9 +687,15 @@ section:hover .entry-cue {
     display: flex !important;
     flex-direction: column !important;
     align-items: flex-end !important;
-    gap: 0.72rem !important;
-    padding: 0 0.2rem 1.35rem 2rem !important;
+    gap: 0.82rem !important;
+    padding: 1rem 1.05rem 1.15rem 1.25rem !important;
     margin: 0 -0.2rem 0 0 !important;
+    background: linear-gradient(135deg, rgba(8, 8, 8, 0.46), rgba(0, 0, 0, 0.34)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.075) !important;
+    border-radius: 5px !important;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.035) !important;
+    backdrop-filter: blur(18px) saturate(0.82) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(0.82) !important;
     pointer-events: none !important;
     transition:
         opacity 0.34s ease,
@@ -711,9 +746,9 @@ section:hover .entry-cue {
 
 .sub-link {
     font-family: 'Josefin Sans', sans-serif !important;
-    font-size: 11px !important;
-    letter-spacing: 0.24em !important;
-    color: rgba(255, 255, 255, 0.58) !important;
+    font-size: 12px !important;
+    letter-spacing: 0.22em !important;
+    color: rgba(255, 255, 255, 0.68) !important;
     cursor: pointer !important;
     transition: color 0.45s ease, letter-spacing 0.45s ease !important;
     display: flex !important;
@@ -731,8 +766,8 @@ section:hover .entry-cue {
 
 .region-link {
     color: rgba(255, 255, 255, 0.4) !important;
-    font-size: 9px !important;
-    letter-spacing: 0.24em !important;
+    font-size: 10px !important;
+    letter-spacing: 0.22em !important;
     margin-bottom: 0.2rem !important;
 }
 
@@ -761,15 +796,15 @@ section:hover .entry-cue {
 }
 
 .sub-link-native {
-    font-size: 9px !important;
-    letter-spacing: 0.16em !important;
-    color: rgba(255, 255, 255, 0.42) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.14em !important;
+    color: rgba(255, 255, 255, 0.5) !important;
 }
 
 .sub-link-english {
-    font-size: 11px !important;
-    letter-spacing: 0.22em !important;
-    color: rgba(255, 255, 255, 0.74) !important;
+    font-size: 12px !important;
+    letter-spacing: 0.2em !important;
+    color: rgba(255, 255, 255, 0.82) !important;
 }
 
 .sub-link:hover .sub-link-native {
@@ -877,10 +912,14 @@ section:hover .entry-cue {
     }
 
     .snap-container section .entry-cue {
-        font-size: 7px !important;
-        letter-spacing: 0.22em !important;
-        margin-top: 0.45rem !important;
-        opacity: 0.42 !important;
+        position: absolute !important;
+        right: 0 !important;
+        left: auto !important;
+        bottom: 0.1rem !important;
+        font-size: 8.5px !important;
+        letter-spacing: 0.18em !important;
+        opacity: 0.62 !important;
+        transform: none !important;
     }
 
     .snap-container section:last-child .caption-block {
@@ -1154,22 +1193,22 @@ section:hover .entry-cue {
         height: auto !important;
         background: linear-gradient(
             to top,
-            rgba(0, 0, 0, 0.72) 0%,
-            rgba(0, 0, 0, 0.48) 42%,
-            rgba(0, 0, 0, 0.18) 74%,
+            rgba(0, 0, 0, 0.42) 0%,
+            rgba(0, 0, 0, 0.22) 44%,
+            rgba(0, 0, 0, 0.08) 72%,
             transparent 100%
         ) !important;
         z-index: 850 !important;
     }
     .bottom-hud::before {
-        height: 100% !important;
-        backdrop-filter: blur(18px) saturate(0.82) !important;
-        -webkit-backdrop-filter: blur(18px) saturate(0.82) !important;
+        height: 4.8rem !important;
+        backdrop-filter: blur(7px) saturate(0.84) !important;
+        -webkit-backdrop-filter: blur(7px) saturate(0.84) !important;
         background: linear-gradient(
             to top,
-            rgba(0, 0, 0, 0.68) 0%,
-            rgba(0, 0, 0, 0.46) 56%,
-            rgba(0, 0, 0, 0.08) 100%
+            rgba(0, 0, 0, 0.32) 0%,
+            rgba(0, 0, 0, 0.16) 56%,
+            transparent 100%
         ) !important;
     }
     .hud-line { display: none !important; }
@@ -1229,7 +1268,7 @@ section:hover .entry-cue {
     }
     .about-icons-group { flex-direction: row !important; gap: 1.5rem !important; }
     .about-close-trigger { writing-mode: horizontal-tb !important; transform: none !important; margin-top: 0 !important; }
-    .about-divider-line { width: 100% !important; height: 1px !important; align-self: auto !important; }
+    .about-divider-line { display: none !important; }
     .about-right-col { gap: 1.2rem !important; }
     .about-right-col p { font-size: 16px !important; line-height: 1.6 !important; color: rgba(255, 255, 255, 0.92) !important; }
     .about-signature { font-size: 19px !important; }
