@@ -208,6 +208,24 @@ function escapeAttr(value) {
         .replace(/>/g, '&gt;');
 }
 
+function navGroupForCategory(category) {
+    return category === 'Birds' || category === 'Wildlife' ? 'Wildlife' : category;
+}
+
+function getCategoryDefaults(cat) {
+    const itemsInCat = rawSheetData.filter(item => (item.Category || "Landscape") === cat);
+    const subRegions = [...new Set(itemsInCat.map(item => item["Sub-Region"] || ""))].filter(Boolean);
+    const regions = [...new Set(itemsInCat.map(item => item.Region || ""))].filter(Boolean);
+    const usesCountryNavigation = cat === 'Birds';
+    return {
+        itemsInCat,
+        subRegions,
+        regions,
+        defaultSub: usesCountryNavigation ? 'all' : (subRegions[0] || 'all'),
+        defaultRegion: usesCountryNavigation ? (regions[0] || '') : (subRegions.length > 0 ? '' : (regions[0] || ''))
+    };
+}
+
 function slugClass(value) {
     return (value || '')
         .toString()
@@ -374,27 +392,32 @@ function renderHUD() {
     const mobileDrawer = document.getElementById('mobile-nav-drawer');
     if (!navSystem || !mobileDrawer) return;
 
-    const categories = [...new Set(rawSheetData.map(item => item.Category || "Landscape"))];
+    const dataCategories = [...new Set(rawSheetData.map(item => item.Category || "Landscape"))];
+    const categories = dataCategories.includes('Wildlife') || dataCategories.includes('Birds')
+        ? dataCategories.filter(cat => cat !== 'Birds' && cat !== 'Wildlife').concat('Wildlife')
+        : dataCategories;
     
     let desktopHtml = '';
     let mobileHtml = '<div class="mobile-drawer-inner">';
 
     categories.forEach(cat => {
-        const itemsInCat = rawSheetData.filter(item => (item.Category || "Landscape") === cat);
-        const subRegions = [...new Set(itemsInCat.map(item => item["Sub-Region"] || ""))].filter(Boolean);
-        const regions = [...new Set(itemsInCat.map(item => item.Region || ""))].filter(Boolean);
+        const { subRegions, regions, defaultSub, defaultRegion } = getCategoryDefaults(cat);
         const isDirectCategory = directCategoryAlbums.has(cat);
-        const usesCountryNavigation = cat === 'Birds';
-        const defaultSub = usesCountryNavigation ? 'all' : (subRegions[0] || 'all');
-        const defaultRegion = usesCountryNavigation ? (regions[0] || '') : (subRegions.length > 0 ? '' : (regions[0] || ''));
+        const navGroup = navGroupForCategory(cat);
+        const mainClick = cat === 'Wildlife'
+            ? `filterGallery('Birds', 'all', 'Aotearoa New Zealand')`
+            : `filterGallery('${cat}', '${defaultSub}', '${defaultRegion}')`;
 
         desktopHtml += `<div class="nav-item-group group">`;
         desktopHtml += `<div class="sub-menu-drawer">`;
 
-        if (isDirectCategory) {
-            const directAlbum = archives.find(album => album.category === cat);
-            if (directAlbum) {
-                desktopHtml += `<span class="sub-link direct-category-link" onclick="filterGallery('${cat}', '${defaultSub}', '${defaultRegion}')"><span class="sub-link-native">${directAlbum.nativeName.toUpperCase()}</span><span class="sub-link-english">${directAlbum.title}</span></span>`;
+        if (cat === 'Wildlife') {
+            const birdDefaults = getCategoryDefaults('Birds');
+            const sealDefaults = getCategoryDefaults('Wildlife');
+            const sealAlbum = archives.find(album => album.category === 'Wildlife');
+            desktopHtml += `<span class="sub-link" onclick="filterGallery('Birds', '${birdDefaults.defaultSub}', '${birdDefaults.defaultRegion}')"><span class="sub-link-english">BIRDS</span></span>`;
+            if (sealAlbum) {
+                desktopHtml += `<span class="sub-link direct-category-link" onclick="filterGallery('Wildlife', '${sealDefaults.defaultSub}', '${sealDefaults.defaultRegion}')"><span class="sub-link-native">${sealAlbum.nativeName.toUpperCase()}</span><span class="sub-link-english">SEALS</span></span>`;
             }
         } else if (cat === 'Landscape' && subRegions.length > 0) {
             regions.forEach(reg => {
@@ -417,15 +440,18 @@ function renderHUD() {
             });
         }
         desktopHtml += `</div>`;
-        desktopHtml += `<span class="nav-link main-trigger" data-category="${cat}" onclick="filterGallery('${cat}', '${defaultSub}', '${defaultRegion}')">${cat.toUpperCase()}</span>`;
+        desktopHtml += `<span class="nav-link main-trigger" data-nav-group="${escapeAttr(navGroup)}" onclick="${mainClick}">${cat.toUpperCase()}</span>`;
         desktopHtml += `</div>`;
 
         mobileHtml += `<div class="mobile-menu-section">`;
-        mobileHtml += `<div class="mobile-parent-toggle" data-category="${escapeAttr(cat)}" onclick="${isDirectCategory ? `filterGallery('${cat}', '${defaultSub}', '${defaultRegion}'); toggleMobileMenu(false);` : 'toggleMobileAccordion(this)'}">${cat.toUpperCase()}</div>`;
+        mobileHtml += `<div class="mobile-parent-toggle" data-nav-group="${escapeAttr(navGroup)}" onclick="${isDirectCategory && cat !== 'Wildlife' ? `filterGallery('${cat}', '${defaultSub}', '${defaultRegion}'); toggleMobileMenu(false);` : 'toggleMobileAccordion(this)'}">${cat.toUpperCase()}</div>`;
         mobileHtml += `<div class="mobile-child-links">`;
 
-        if (isDirectCategory) {
-            mobileHtml += ``;
+        if (cat === 'Wildlife') {
+            const birdDefaults = getCategoryDefaults('Birds');
+            const sealDefaults = getCategoryDefaults('Wildlife');
+            mobileHtml += `<div class="mobile-sub-link" data-category="Birds" data-sub="${escapeAttr(birdDefaults.defaultSub)}" data-region="${escapeAttr(birdDefaults.defaultRegion)}" onclick="filterGallery('Birds', '${birdDefaults.defaultSub}', '${birdDefaults.defaultRegion}'); toggleMobileMenu(false);">BIRDS</div>`;
+            mobileHtml += `<div class="mobile-sub-link" data-category="Wildlife" data-sub="${escapeAttr(sealDefaults.defaultSub)}" data-region="${escapeAttr(sealDefaults.defaultRegion)}" onclick="filterGallery('Wildlife', '${sealDefaults.defaultSub}', '${sealDefaults.defaultRegion}'); toggleMobileMenu(false);">SEALS</div>`;
         } else if (cat === 'Landscape' && subRegions.length > 0) {
             regions.forEach(reg => {
                 mobileHtml += `<div class="mobile-region-label">${formatRegionLabel(reg)}</div>`;
@@ -511,13 +537,13 @@ function filterGallery(cat, sub = 'all', reg = '') {
 
 function updateActiveNavigation() {
     document.querySelectorAll('.main-trigger').forEach(trigger => {
-        trigger.classList.toggle('active', trigger.dataset.category === curCat);
+        trigger.classList.toggle('active', trigger.dataset.navGroup === navGroupForCategory(curCat));
     });
-    document.querySelectorAll('.mobile-parent-toggle[data-category]').forEach(trigger => {
-        const isActive = trigger.dataset.category === curCat;
+    document.querySelectorAll('.mobile-parent-toggle[data-nav-group]').forEach(trigger => {
+        const isActive = trigger.dataset.navGroup === navGroupForCategory(curCat);
         trigger.classList.toggle('active', isActive);
         trigger.parentElement?.classList.toggle('active', isActive);
-        if (isActive && !directCategoryAlbums.has(curCat)) {
+        if (isActive && (!directCategoryAlbums.has(curCat) || trigger.dataset.navGroup === 'Wildlife')) {
             trigger.parentElement?.classList.add('accordion-active');
         }
     });
