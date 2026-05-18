@@ -557,7 +557,7 @@ section:hover .entry-cue::before {
 }
 
 .mobile-image-viewer.is-loading .mobile-viewer-img {
-    opacity: 0.78;
+    opacity: 0;
 }
 
 .mobile-image-viewer.is-loading .mobile-viewer-nav {

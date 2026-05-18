@@ -64,6 +64,7 @@ let mobileViewerStartTranslateY = 0;
 let mobileViewerDidMove = false;
 let mobileViewerLastTap = 0;
 let mobileViewerIsLoading = false;
+let mobileViewerLoadToken = 0;
 let aboutTouchStartX = 0;
 let aboutTouchStartY = 0;
 let aboutTouchStartDistance = 0;
@@ -802,23 +803,31 @@ function updateMobileImageViewer() {
     if (!currentAlbum || !mobileViewerImg) return;
     const plate = currentAlbum.plates[currentIndex];
     const nextSrc = getImagePath(currentAlbum.imageFolder, getMasterFile(plate));
+    const loadToken = ++mobileViewerLoadToken;
     mobileViewerIsLoading = true;
     mobileImageViewer?.classList.add('is-loading');
+    resetMobileViewerZoom();
+    mobileViewerImg.removeAttribute('src');
+    mobileViewerImg.alt = '';
     mobileViewerImg.onload = () => {
+        if (loadToken !== mobileViewerLoadToken) return;
         mobileViewerIsLoading = false;
         mobileImageViewer?.classList.remove('is-loading');
         preloadMobileViewerNeighbors();
     };
     mobileViewerImg.onerror = () => {
+        if (loadToken !== mobileViewerLoadToken) return;
         mobileViewerIsLoading = false;
         mobileImageViewer?.classList.remove('is-loading');
     };
-    mobileViewerImg.src = nextSrc;
-    if (mobileViewerImg.complete) mobileViewerImg.onload();
     mobileViewerImg.alt = plate["Exhibition Title"] || currentAlbum.title;
-    resetMobileViewerZoom();
     if (mobileViewerNative) mobileViewerNative.textContent = plate["Native Name"] || currentAlbum.nativeName;
     if (mobileViewerTitle) mobileViewerTitle.textContent = `${plate["Exhibition Title"] || currentAlbum.title} // ${formatRef(currentIndex)}`;
+    requestAnimationFrame(() => {
+        if (loadToken !== mobileViewerLoadToken) return;
+        mobileViewerImg.src = nextSrc;
+        if (mobileViewerImg.complete && mobileViewerImg.naturalWidth > 0) mobileViewerImg.onload();
+    });
 }
 
 function preloadMobileViewerNeighbors() {
