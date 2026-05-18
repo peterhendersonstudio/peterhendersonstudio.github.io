@@ -298,19 +298,19 @@ section .glass-wall {
 
 .entry-cue {
     font-family: 'Josefin Sans', sans-serif;
-    font-size: 10px;
-    letter-spacing: 0.22em;
+    font-size: 9.5px;
+    letter-spacing: 0.24em;
     line-height: 1;
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.78rem;
-    margin: 0.8rem 0 0;
-    color: rgba(255, 255, 255, 0.5);
+    gap: 0.62rem;
+    margin: 0.72rem 0 0;
+    color: rgba(255, 255, 255, 0.52);
     text-transform: uppercase;
     opacity: 0;
     transform: translateY(4px);
-    transition: opacity 0.45s ease, transform 0.45s ease, color 0.45s ease;
+    transition: opacity 0.45s ease, transform 0.45s ease, color 0.45s ease, font-size 0.45s ease, letter-spacing 0.45s ease;
     text-shadow: 0 1px 14px rgba(0, 0, 0, 0.86);
     white-space: nowrap;
 }
@@ -318,7 +318,7 @@ section .glass-wall {
 .entry-cue::before {
     content: "";
     display: block;
-    width: 2.4rem;
+    width: 1.85rem;
     height: 1px;
     background: rgba(255, 255, 255, 0.3);
 }
@@ -330,7 +330,19 @@ section:hover .entry-cue {
 }
 
 section:hover .entry-cue {
-    color: rgba(255, 255, 255, 0.74);
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 10.5px;
+    letter-spacing: 0.27em;
+}
+
+section:hover .entry-cue::before {
+    background: rgba(255, 255, 255, 0.52);
+}
+
+@media (min-width: 769px) {
+    .snap-container section:last-child .caption-block {
+        bottom: 9.4rem !important;
+    }
 }
 
 /* EXHIBITION DETAIL LAYOUT VIEW */
@@ -937,7 +949,7 @@ section:hover .entry-cue {
     }
 
     .snap-container section:last-child .caption-block {
-        bottom: 6.3rem !important;
+        bottom: 7.3rem !important;
     }
 
     /* 3. MAIN DETAIL VIEW LAYOUT ENGINE RE-FLOW */

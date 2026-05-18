@@ -528,7 +528,7 @@ function renderHome() {
             <div class="caption-block">
                 <p class="native-name">${album.nativeName}</p>
                 <h2 class="archive-title">${album.title}</h2>
-                <p class="entry-cue">OPEN</p>
+                <p class="entry-cue">VIEW ALBUM</p>
             </div>
         </section>`;
     });
@@ -566,7 +566,7 @@ function renderLocation(album) {
             <div class="caption-block">
                 <p class="native-name">${plate["Native Name"] || album.nativeName}</p>
                 <h2 class="archive-title">${plate["Exhibition Title"] || album.title} // ${formatRef(idx)}</h2>
-                <p class="entry-cue">OPEN</p>
+                <p class="entry-cue">VIEW IMAGE</p>
             </div>
         </section>`;
     });
@@ -896,10 +896,6 @@ if (mobileImageViewer) {
         }
         if (deltaY > 72 && deltaY > Math.abs(deltaX) * 1.25) {
             closeMobileImageViewer();
-            return;
-        }
-        if (Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4) {
-            navigateMobileImageViewer(deltaX < 0 ? 1 : -1);
             return;
         }
         if (event.target === mobileViewerImg && !mobileViewerDidMove && Math.abs(deltaX) < 12 && Math.abs(deltaY) < 12) {
