@@ -164,53 +164,6 @@ body[data-layer="detail"] .bottom-hud {
 .nav-link.active { opacity: 0.9; }
 .nav-link:hover { opacity: 1; }
 
-.hud-entry-cue {
-    position: absolute;
-    right: clamp(21rem, 21vw, 30rem);
-    bottom: 3.5rem;
-    z-index: 2;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.62rem;
-    border: 0;
-    background: transparent;
-    padding: 0;
-    font-family: 'Josefin Sans', sans-serif;
-    font-size: 9.5px;
-    letter-spacing: 0.24em;
-    line-height: 1;
-    color: rgba(255, 255, 255, 0.58);
-    text-transform: uppercase;
-    text-shadow: 0 1px 14px rgba(0, 0, 0, 0.86);
-    cursor: pointer;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease, color 0.3s ease;
-    white-space: nowrap;
-}
-
-.hud-entry-cue::before {
-    content: "";
-    display: block;
-    width: 1.85rem;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.32);
-    transition: background 0.3s ease;
-}
-
-.hud-entry-cue.is-visible {
-    opacity: 0.76;
-    pointer-events: auto;
-}
-
-.hud-entry-cue:hover {
-    color: rgba(255, 255, 255, 0.88);
-}
-
-.hud-entry-cue:hover::before {
-    background: rgba(255, 255, 255, 0.52);
-}
-
 /* THE SNAP SCROLL CONTAINER ARBITER */
 .snap-container { 
     height: 100vh; 
@@ -392,11 +345,17 @@ section:hover .entry-cue::before {
 
 @media (min-width: 769px) {
     .snap-container section .entry-cue {
-        display: none !important;
+        display: inline-flex !important;
+        position: relative !important;
+        right: auto !important;
+        bottom: auto !important;
+        margin-top: 0.72rem !important;
+        transform: translateY(4px);
     }
 
-    .snap-container section:last-child .caption-block {
-        bottom: 9.4rem !important;
+    .snap-container section.is-active .entry-cue,
+    .snap-container section:hover .entry-cue {
+        transform: translateY(0);
     }
 }
 
@@ -912,10 +871,6 @@ section:hover .entry-cue::before {
     color: rgba(255, 255, 255, 0.98) !important;
 }
    @media (max-width: 768px) {
-
-    .hud-entry-cue {
-        display: none !important;
-    }
 
   /* 1. SCROLL VIEWS RE-ENGINE: SEAMLESS VERTICAL FLUSH CONTINUOUS FEED */
     .snap-container {
