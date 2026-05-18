@@ -69,10 +69,8 @@ let aboutTouchStartY = 0;
 let aboutTouchStartDistance = 0;
 let aboutStartScale = 1;
 let aboutScale = 1;
-let aboutTranslateX = 0;
-let aboutTranslateY = 0;
-let aboutStartTranslateX = 0;
-let aboutStartTranslateY = 0;
+let aboutStartScrollLeft = 0;
+let aboutStartScrollTop = 0;
 
 // DOM Anchors
 const homeLayer = document.getElementById('layer-home');
@@ -200,6 +198,14 @@ function formatSubLabelHtml(cat, sub) {
 function formatRegionLabel(region) {
     if (region === 'Aotearoa New Zealand') return 'AOTEAROA NEW ZEALAND';
     return region.toUpperCase();
+}
+
+function escapeAttr(value) {
+    return (value || '').toString()
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
 }
 
 function slugClass(value) {
@@ -415,7 +421,7 @@ function renderHUD() {
         desktopHtml += `</div>`;
 
         mobileHtml += `<div class="mobile-menu-section">`;
-        mobileHtml += `<div class="mobile-parent-toggle" onclick="${isDirectCategory ? `filterGallery('${cat}', '${defaultSub}', '${defaultRegion}'); toggleMobileMenu(false);` : 'toggleMobileAccordion(this)'}">${cat.toUpperCase()}</div>`;
+        mobileHtml += `<div class="mobile-parent-toggle" data-category="${escapeAttr(cat)}" onclick="${isDirectCategory ? `filterGallery('${cat}', '${defaultSub}', '${defaultRegion}'); toggleMobileMenu(false);` : 'toggleMobileAccordion(this)'}">${cat.toUpperCase()}</div>`;
         mobileHtml += `<div class="mobile-child-links">`;
 
         if (isDirectCategory) {
@@ -424,20 +430,20 @@ function renderHUD() {
             regions.forEach(reg => {
                 mobileHtml += `<div class="mobile-region-label">${formatRegionLabel(reg)}</div>`;
                 subRegions.sort().reverse().forEach(sub => {
-                    mobileHtml += `<div class="mobile-sub-link" onclick="filterGallery('${cat}', '${sub}'); toggleMobileMenu(false);">${formatSubLabel(cat, sub)}</div>`;
+                    mobileHtml += `<div class="mobile-sub-link" data-category="${escapeAttr(cat)}" data-sub="${escapeAttr(sub)}" data-region="" onclick="filterGallery('${cat}', '${sub}'); toggleMobileMenu(false);">${formatSubLabel(cat, sub)}</div>`;
                 });
             });
         } else if (usesCountryNavigation) {
             regions.forEach(reg => {
-                mobileHtml += `<div class="mobile-sub-link" onclick="filterGallery('${cat}', 'all', '${reg}'); toggleMobileMenu(false);">${formatRegionLabel(reg)}</div>`;
+                mobileHtml += `<div class="mobile-sub-link" data-category="${escapeAttr(cat)}" data-sub="all" data-region="${escapeAttr(reg)}" onclick="filterGallery('${cat}', 'all', '${reg}'); toggleMobileMenu(false);">${formatRegionLabel(reg)}</div>`;
             });
         } else if (subRegions.length > 0) {
             subRegions.sort().reverse().forEach(sub => {
-                mobileHtml += `<div class="mobile-sub-link" onclick="filterGallery('${cat}', '${sub}'); toggleMobileMenu(false);">${formatSubLabel(cat, sub)}</div>`;
+                mobileHtml += `<div class="mobile-sub-link" data-category="${escapeAttr(cat)}" data-sub="${escapeAttr(sub)}" data-region="" onclick="filterGallery('${cat}', '${sub}'); toggleMobileMenu(false);">${formatSubLabel(cat, sub)}</div>`;
             });
         } else {
             regions.forEach(reg => {
-                mobileHtml += `<div class="mobile-sub-link" onclick="filterGallery('${cat}', 'all', '${reg}'); toggleMobileMenu(false);">${formatRegionLabel(reg)}</div>`;
+                mobileHtml += `<div class="mobile-sub-link" data-category="${escapeAttr(cat)}" data-sub="all" data-region="${escapeAttr(reg)}" onclick="filterGallery('${cat}', 'all', '${reg}'); toggleMobileMenu(false);">${formatRegionLabel(reg)}</div>`;
             });
         }
         mobileHtml += `</div></div>`;
@@ -506,6 +512,21 @@ function filterGallery(cat, sub = 'all', reg = '') {
 function updateActiveNavigation() {
     document.querySelectorAll('.main-trigger').forEach(trigger => {
         trigger.classList.toggle('active', trigger.dataset.category === curCat);
+    });
+    document.querySelectorAll('.mobile-parent-toggle[data-category]').forEach(trigger => {
+        const isActive = trigger.dataset.category === curCat;
+        trigger.classList.toggle('active', isActive);
+        trigger.parentElement?.classList.toggle('active', isActive);
+        if (isActive && !directCategoryAlbums.has(curCat)) {
+            trigger.parentElement?.classList.add('accordion-active');
+        }
+    });
+    document.querySelectorAll('.mobile-sub-link[data-category]').forEach(link => {
+        const linkRegion = link.dataset.region || '';
+        const isActive = link.dataset.category === curCat
+            && link.dataset.sub === curSub
+            && linkRegion === (curReg || '');
+        link.classList.toggle('active', isActive);
     });
 }
 
@@ -977,32 +998,16 @@ function getAboutPanel() {
     return document.querySelector('#about-overlay .about-right-col');
 }
 
-function clampAboutPan() {
-    const panel = getAboutPanel();
-    if (!panel || aboutScale <= 1) {
-        aboutTranslateX = 0;
-        aboutTranslateY = 0;
-        return;
-    }
-
-    const maxX = (panel.clientWidth * (aboutScale - 1)) / 2;
-    const maxY = Math.max(0, (panel.scrollHeight * aboutScale) - panel.clientHeight);
-    aboutTranslateX = Math.max(-maxX, Math.min(maxX, aboutTranslateX));
-    aboutTranslateY = Math.max(-maxY, Math.min(0, aboutTranslateY));
-}
-
 function applyAboutTransform() {
     const panel = getAboutPanel();
     if (!panel) return;
-    clampAboutPan();
-    panel.style.transform = `translate3d(${aboutTranslateX}px, ${aboutTranslateY}px, 0) scale(${aboutScale})`;
+    panel.style.setProperty('--about-text-zoom', aboutScale.toFixed(3));
+    panel.style.transform = '';
     panel.classList.toggle('about-zoomed', aboutScale > 1);
 }
 
 function resetAboutZoom() {
     aboutScale = 1;
-    aboutTranslateX = 0;
-    aboutTranslateY = 0;
     aboutTouchStartDistance = 0;
     applyAboutTransform();
 }
@@ -1017,8 +1022,8 @@ function setupAboutZoomHandlers() {
         const touch = event.touches[0];
         aboutTouchStartX = touch.clientX;
         aboutTouchStartY = touch.clientY;
-        aboutStartTranslateX = aboutTranslateX;
-        aboutStartTranslateY = aboutTranslateY;
+        aboutStartScrollLeft = panel.scrollLeft;
+        aboutStartScrollTop = panel.scrollTop;
         if (event.touches.length === 2) {
             aboutTouchStartDistance = getTouchDistance(event.touches);
             aboutStartScale = aboutScale;
@@ -1039,12 +1044,13 @@ function setupAboutZoomHandlers() {
             return;
         }
 
-        if (event.touches.length === 1 && aboutScale > 1) {
+        if (event.touches.length === 1) {
             event.preventDefault();
             const touch = event.touches[0];
-            aboutTranslateX = aboutStartTranslateX + touch.clientX - aboutTouchStartX;
-            aboutTranslateY = aboutStartTranslateY + touch.clientY - aboutTouchStartY;
-            applyAboutTransform();
+            const deltaX = touch.clientX - aboutTouchStartX;
+            const deltaY = touch.clientY - aboutTouchStartY;
+            if (aboutScale > 1) panel.scrollLeft = aboutStartScrollLeft - deltaX;
+            panel.scrollTop = aboutStartScrollTop - deltaY;
         }
     }, { passive: false });
 
