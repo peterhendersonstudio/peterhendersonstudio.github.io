@@ -1327,24 +1327,30 @@ section:hover .entry-cue::before {
         max-width: 100vw !important;
         height: 100dvh !important;
         max-height: 100dvh !important;
-        padding: 3.2rem 1rem 2rem !important;
+        padding: 4.4rem 1.25rem 2rem !important;
         overflow: hidden !important;
     }
     .about-split-container::before {
-        top: 2.25rem !important;
-        left: 1rem !important;
-        right: 1rem !important;
+        top: 3.35rem !important;
+        left: 1.25rem !important;
+        right: 1.25rem !important;
     }
     .about-left-col {
         flex-direction: row !important;
         width: auto !important;
         justify-content: space-between !important;
         align-items: center !important;
-        left: 1rem !important;
-        right: 1rem !important;
+        top: 1.25rem !important;
+        left: 1.25rem !important;
+        right: 1.25rem !important;
         min-width: 0 !important;
+        height: 1.9rem !important;
     }
     .about-icons-group { flex-direction: row !important; gap: 1.5rem !important; }
+    .about-social-icon {
+        width: 24px !important;
+        height: 24px !important;
+    }
     .about-close-trigger { writing-mode: horizontal-tb !important; transform: none !important; margin-top: 0 !important; }
     .about-divider-line { display: none !important; }
     .about-right-col {
