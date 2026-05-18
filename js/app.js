@@ -777,7 +777,21 @@ function preloadMobileViewerNeighbors() {
 
 function applyMobileViewerTransform() {
     if (!mobileViewerImg) return;
+    clampMobileViewerPan();
     mobileViewerImg.style.transform = `translate3d(${mobileViewerTranslateX}px, ${mobileViewerTranslateY}px, 0) scale(${mobileViewerScale})`;
+}
+
+function clampMobileViewerPan() {
+    if (mobileViewerScale <= 1) {
+        mobileViewerTranslateX = 0;
+        mobileViewerTranslateY = 0;
+        return;
+    }
+
+    const maxX = (window.innerWidth * (mobileViewerScale - 1)) / 2;
+    const maxY = (window.innerHeight * (mobileViewerScale - 1)) / 2;
+    mobileViewerTranslateX = Math.max(-maxX, Math.min(maxX, mobileViewerTranslateX));
+    mobileViewerTranslateY = Math.max(-maxY, Math.min(maxY, mobileViewerTranslateY));
 }
 
 function resetMobileViewerZoom() {
