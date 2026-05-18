@@ -25,9 +25,9 @@ body.about-modal-active {
 /* GLOBAL CONTROLS & NAVIGATION */
 #global-back {
     position: fixed;
-    top: 4rem;
-    left: 6.5rem;
-    z-index: 500;
+    top: 2rem;
+    left: 2rem;
+    z-index: 650;
     font-family: 'Josefin Sans', sans-serif;
     font-size: 13px;
     letter-spacing: 0.5em;
@@ -38,15 +38,12 @@ body.about-modal-active {
     transition: all 0.4s ease;
     display: none;
     pointer-events: auto;
+    padding: 0.75rem 1rem 0.7rem 0;
 }
-#global-back:hover { color: #fff; letter-spacing: 0.6em; }
+#global-back:hover { color: #fff; }
 
 body[data-layer="detail"] #global-back {
-    top: 2rem;
-    left: 2rem;
-    z-index: 650;
     color: rgba(255,255,255,0.55);
-    padding: 0.75rem 1rem 0.7rem 0;
 }
 
 body[data-layer="detail"] #global-back:hover {
