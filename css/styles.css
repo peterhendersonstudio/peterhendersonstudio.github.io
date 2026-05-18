@@ -571,7 +571,7 @@ section .glass-wall {
 
 .nav-item-group {
     display: flex !important;
-    flex-direction: row-reverse !important; /* Reverses order so menus grow cleanly out to the LEFT */
+    flex-direction: column-reverse !important;
     align-items: center !important;
     position: relative !important;
     gap: 0 !important;
@@ -580,22 +580,23 @@ section .glass-wall {
     transition: opacity 0.55s ease !important;
 }
 
-.nav-item-group:hover {
+.nav-item-group:hover,
+.nav-item-group.menu-open {
     z-index: 40 !important;
 }
 
 .nav-item-group:hover ~ .nav-item-group,
 .nav-item-group:has(~ .nav-item-group:hover) {
-    opacity: 0 !important;
-    pointer-events: none !important;
+    opacity: 0.72 !important;
 }
 
 .sub-menu-drawer {
     position: absolute !important;
     right: 0 !important;
     bottom: 100% !important;
-    transform: translateY(10px) !important;
+    transform: translateY(8px) !important;
     z-index: 20 !important;
+    min-width: 12rem !important;
     width: max-content !important;
     max-width: none !important;
     opacity: 0 !important;
@@ -603,45 +604,22 @@ section .glass-wall {
     display: flex !important;
     flex-direction: column !important;
     align-items: flex-end !important;
-    gap: 0.82rem !important;
-    padding: 0 0.2rem 1.45rem 2.8rem !important;
+    gap: 0.72rem !important;
+    padding: 0 0.2rem 1.35rem 2rem !important;
     margin: 0 -0.2rem 0 0 !important;
     pointer-events: none !important;
     transition:
-        opacity 0.78s ease,
-        transform 0.95s cubic-bezier(0.22, 1, 0.36, 1) !important;
+        opacity 0.34s ease,
+        transform 0.42s cubic-bezier(0.22, 1, 0.36, 1) !important;
     white-space: nowrap !important;
 }
 
 .nested-nav-group {
-    display: flex !important;
-    flex-direction: row-reverse !important;
-    align-items: center !important;
-    position: relative !important;
-    gap: 0 !important;
-    padding: 18px 0 !important;
-    margin: -18px 0 !important;
+    display: contents !important;
 }
 
 .nested-sub-menu {
-    position: absolute !important;
-    top: 50% !important;
-    right: 100% !important;
-    transform: translateY(-50%) translateX(10px) !important;
-    width: max-content !important;
-    max-width: none !important;
-    opacity: 0 !important;
-    overflow: visible !important;
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 0 !important;
-    padding: 24px 2.1rem 24px 0 !important;
-    margin: -24px -0.6rem !important;
-    pointer-events: none !important;
-    transition:
-        opacity 0.78s ease,
-        transform 0.95s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    display: contents !important;
 }
 
 .nested-nav-group:hover .nested-sub-menu,
@@ -652,30 +630,25 @@ section .glass-wall {
 }
 
 /* Slide Reveal Triggers on Hover States */
-.nav-item-group:hover .sub-menu-drawer {
+.nav-item-group:hover .sub-menu-drawer,
+.nav-item-group.menu-open .sub-menu-drawer {
     opacity: 1 !important;
     pointer-events: auto !important;
     transform: translateY(0) !important;
 }
 
 .nav-item-group:hover .main-trigger {
-    opacity: 0.62 !important;
-    color: rgba(255, 255, 255, 0.78) !important;
+    opacity: 0.9 !important;
+    color: rgba(255, 255, 255, 0.92) !important;
     cursor: default !important;
 }
 
 .nav-item-group:hover .main-trigger::after {
-    content: "" !important;
-    display: inline-block !important;
-    width: 1px !important;
-    height: 1.25em !important;
-    margin-left: 1.55rem !important;
-    vertical-align: -0.22em !important;
-    background: rgba(255, 255, 255, 0.28) !important;
+    content: none !important;
 }
 
 .nav-item-group:hover .sub-link {
-    color: rgba(255, 255, 255, 0.58) !important;
+    color: rgba(255, 255, 255, 0.68) !important;
 }
 
 .nav-item-group:hover .sub-link:hover {
@@ -685,36 +658,38 @@ section .glass-wall {
 .sub-link {
     font-family: 'Josefin Sans', sans-serif !important;
     font-size: 11px !important;
-    letter-spacing: 0.32em !important;
-    color: rgba(255, 255, 255, 0.4) !important;
+    letter-spacing: 0.24em !important;
+    color: rgba(255, 255, 255, 0.58) !important;
     cursor: pointer !important;
     transition: color 0.45s ease, letter-spacing 0.45s ease !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 0.18rem !important;
+    line-height: 1.2 !important;
 }
 
 .nested-sub-menu .sub-link + .sub-link {
-    border-left: 1px solid rgba(255, 255, 255, 0.24) !important;
-    margin-left: 1.15rem !important;
-    padding-left: 1.35rem !important;
+    border-left: 0 !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
 }
 
 .region-link {
-    color: rgba(255, 255, 255, 0.44) !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    font-size: 9px !important;
+    letter-spacing: 0.24em !important;
+    margin-bottom: 0.2rem !important;
 }
 
 .nested-nav-group:hover .region-link,
 .nested-nav-group.menu-open .region-link {
-    color: rgba(255, 255, 255, 0.52) !important;
+    color: rgba(255, 255, 255, 0.58) !important;
 }
 
 .nested-nav-group:hover .region-link::after,
 .nested-nav-group.menu-open .region-link::after {
-    content: "" !important;
-    display: inline-block !important;
-    width: 18px !important;
-    height: 1px !important;
-    margin-left: 1.35rem !important;
-    vertical-align: 0.24em !important;
-    background: rgba(255, 255, 255, 0.28) !important;
+    content: none !important;
 }
 
 .nested-nav-group:hover .nested-sub-menu .sub-link,
@@ -724,11 +699,31 @@ section .glass-wall {
 
 .sub-link:hover {
     color: rgba(255, 255, 255, 1) !important;
-    letter-spacing: 0.36em !important;
+    letter-spacing: 0.25em !important;
 }
 
 .main-trigger {
     cursor: pointer !important;
+}
+
+.sub-link-native {
+    font-size: 9px !important;
+    letter-spacing: 0.16em !important;
+    color: rgba(255, 255, 255, 0.42) !important;
+}
+
+.sub-link-english {
+    font-size: 11px !important;
+    letter-spacing: 0.22em !important;
+    color: rgba(255, 255, 255, 0.74) !important;
+}
+
+.sub-link:hover .sub-link-native {
+    color: rgba(255, 255, 255, 0.66) !important;
+}
+
+.sub-link:hover .sub-link-english {
+    color: rgba(255, 255, 255, 0.98) !important;
 }
    @media (max-width: 768px) {
 
@@ -827,6 +822,10 @@ section .glass-wall {
         text-shadow: 0 1px 14px rgba(0, 0, 0, 0.82) !important;
     }
 
+    .snap-container section:last-child .caption-block {
+        bottom: 6.3rem !important;
+    }
+
     /* 3. MAIN DETAIL VIEW LAYOUT ENGINE RE-FLOW */
     #layer-detail:not(.hidden) {
         position: fixed !important;
@@ -875,7 +874,7 @@ section .glass-wall {
 
     body.mobile-viewer-active {
         overflow: hidden !important;
-        touch-action: none !important;
+        touch-action: manipulation !important;
     }
 
     .mobile-image-viewer {
@@ -909,6 +908,8 @@ section .glass-wall {
         user-select: none !important;
         -webkit-user-select: none !important;
         transition: padding 0.24s ease !important;
+        transform-origin: center center !important;
+        will-change: transform, padding !important;
     }
 
     .mobile-image-viewer.is-borderless .mobile-viewer-img {
@@ -1258,7 +1259,7 @@ section .glass-wall {
 @media (hover: none) and (pointer: coarse) {
     body.mobile-viewer-active {
         overflow: hidden !important;
-        touch-action: none !important;
+        touch-action: manipulation !important;
     }
 
     .mobile-image-viewer {
@@ -1292,6 +1293,8 @@ section .glass-wall {
         user-select: none !important;
         -webkit-user-select: none !important;
         transition: padding 0.24s ease !important;
+        transform-origin: center center !important;
+        will-change: transform, padding !important;
     }
 
     .mobile-image-viewer.is-borderless .mobile-viewer-img {

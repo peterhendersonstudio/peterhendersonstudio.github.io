@@ -54,6 +54,14 @@ const navHoverCloseTimers = new WeakMap();
 const showPlateAnnotations = false;
 let mobileViewerTouchStartX = 0;
 let mobileViewerTouchStartY = 0;
+let mobileViewerTouchStartDistance = 0;
+let mobileViewerStartScale = 1;
+let mobileViewerScale = 1;
+let mobileViewerTranslateX = 0;
+let mobileViewerTranslateY = 0;
+let mobileViewerStartTranslateX = 0;
+let mobileViewerStartTranslateY = 0;
+let mobileViewerDidMove = false;
 
 // DOM Anchors
 const homeLayer = document.getElementById('layer-home');
@@ -134,6 +142,11 @@ function getMasterFile(plate) {
     return plate["Physical Master"] || plate["Physical Preview"];
 }
 
+function getAlbumImagePath(album, plate, field = 'preview') {
+    const file = field === 'master' ? getMasterFile(plate) : getPreviewFile(plate);
+    return getImagePath(album.imageFolder, file);
+}
+
 function parsePos(val) {
     if (!val || val === 'center' || val === '0R 0') return '50% 50%';
     let h = 50;
@@ -165,6 +178,12 @@ function formatSubLabel(cat, sub) {
     if (sub === 'South Island') return 'SOUTH ISLAND / TE WAIPOUNAMU';
     if (sub === 'North Island') return 'NORTH ISLAND / TE IKA-A-MĀUI';
     return sub.toUpperCase();
+}
+
+function formatSubLabelHtml(cat, sub) {
+    if (sub === 'South Island') return '<span class="sub-link-native">TE WAIPOUNAMU</span><span class="sub-link-english">SOUTH ISLAND</span>';
+    if (sub === 'North Island') return '<span class="sub-link-native">TE IKA-A-MĀUI</span><span class="sub-link-english">NORTH ISLAND</span>';
+    return `<span class="sub-link-english">${formatSubLabel(cat, sub)}</span>`;
 }
 
 function formatRegionLabel(region) {
@@ -217,6 +236,38 @@ function observeSections(container) {
         }, { threshold: 0.5 });
     }
     container.querySelectorAll('section').forEach(section => observer.observe(section));
+}
+
+function preloadImage(src) {
+    if (!src) return;
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = src;
+}
+
+function setupScrollPreload(container, albumOrAlbums) {
+    if (!window.IntersectionObserver || !container) return;
+    const albumsByFolder = Array.isArray(albumOrAlbums)
+        ? new Map(albumOrAlbums.map(album => [album.folder, album]))
+        : null;
+    const singleAlbum = Array.isArray(albumOrAlbums) ? null : albumOrAlbums;
+
+    const preloadObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            const section = entry.target;
+            const album = singleAlbum || albumsByFolder?.get(section.dataset.folder);
+            if (!album) return;
+            const index = Number(section.dataset.index || 0);
+            const start = singleAlbum ? index + 1 : 0;
+            const end = singleAlbum ? Math.min(album.plates.length, index + 4) : Math.min(album.plates.length, 2);
+            for (let i = start; i < end; i += 1) {
+                preloadImage(getAlbumImagePath(album, album.plates[i], 'preview'));
+            }
+        });
+    }, { root: isMobileViewport() ? null : container, rootMargin: '900px 0px', threshold: 0.01 });
+
+    container.querySelectorAll('section').forEach(section => preloadObserver.observe(section));
 }
 
 function updateProgress(container) {
@@ -327,14 +378,10 @@ function renderHUD() {
             desktopHtml += ``;
         } else if (cat === 'Landscape' && subRegions.length > 0) {
             regions.forEach(reg => {
-                desktopHtml += `<div class="nested-nav-group">`;
-                desktopHtml += `<div class="nested-sub-menu">`;
-                subRegions.sort().reverse().forEach(sub => {
-                    desktopHtml += `<span class="sub-link" onclick="filterGallery('${cat}', '${sub}', '')">${formatSubLabel(cat, sub)}</span>`;
-                });
-                desktopHtml += `</div>`;
                 desktopHtml += `<span class="sub-link region-link" onclick="filterGallery('${cat}', '${defaultSub}', '')">${formatRegionLabel(reg)}</span>`;
-                desktopHtml += `</div>`;
+                subRegions.sort().reverse().forEach(sub => {
+                    desktopHtml += `<span class="sub-link island-link" onclick="filterGallery('${cat}', '${sub}', '')">${formatSubLabelHtml(cat, sub)}</span>`;
+                });
             });
         } else if (usesCountryNavigation) {
             regions.forEach(reg => {
@@ -342,7 +389,7 @@ function renderHUD() {
             });
         } else if (subRegions.length > 0) {
             subRegions.sort().reverse().forEach(sub => {
-                desktopHtml += `<span class="sub-link" onclick="filterGallery('${cat}', '${sub}')">${formatSubLabel(cat, sub)}</span>`;
+                    desktopHtml += `<span class="sub-link" onclick="filterGallery('${cat}', '${sub}')">${formatSubLabelHtml(cat, sub)}</span>`;
             });
         } else {
             regions.forEach(reg => {
@@ -389,7 +436,7 @@ function renderHUD() {
 }
 
 function setupNavigationHoverGrace(navRoot) {
-    navRoot.querySelectorAll('.nested-nav-group').forEach(group => {
+    navRoot.querySelectorAll('.nav-item-group').forEach(group => {
         group.addEventListener('pointerenter', () => {
             const timer = navHoverCloseTimers.get(group);
             if (timer) clearTimeout(timer);
@@ -399,7 +446,7 @@ function setupNavigationHoverGrace(navRoot) {
         group.addEventListener('pointerleave', () => {
             const timer = setTimeout(() => {
                 group.classList.remove('menu-open');
-            }, 220);
+            }, 160);
             navHoverCloseTimers.set(group, timer);
         });
     });
@@ -464,10 +511,10 @@ function renderHome() {
         const secondPlate = album.plates[1];
         const firstImage = getPreviewFile(firstPlate);
         const secondImage = secondPlate ? getPreviewFile(secondPlate) : '';
-        const firstLoading = albumIdx === 0 ? 'eager' : 'lazy';
-        const firstPriority = albumIdx === 0 ? 'high' : 'auto';
+        const firstLoading = albumIdx < 3 ? 'eager' : 'lazy';
+        const firstPriority = albumIdx < 2 ? 'high' : 'auto';
         html += `
-        <section id="folder-${album.folder}" class="snap-item category-${slugClass(album.category)} w-screen h-screen relative flex items-center justify-center overflow-hidden group select-none cursor-pointer" onclick="enterLocation('${album.folder}')">
+        <section id="folder-${album.folder}" data-folder="${album.folder}" data-index="${albumIdx}" class="snap-item category-${slugClass(album.category)} w-screen h-screen relative flex items-center justify-center overflow-hidden group select-none cursor-pointer" onclick="enterLocation('${album.folder}')">
             <div class="media-stage">
                 <img class="img-layer home-img-1" src="${getImagePath(album.imageFolder, firstImage)}" loading="${firstLoading}" fetchpriority="${firstPriority}" decoding="async" style="object-position: ${parsePos(firstPlate["Framing Adjust"])}" alt="${album.title}">
                 ${secondPlate ? `<img class="img-layer home-img-2" data-src="${getImagePath(album.imageFolder, secondImage)}" loading="lazy" decoding="async" style="object-position: ${parsePos(secondPlate["Framing Adjust"])}" alt="${album.title}">` : ''}
@@ -483,6 +530,7 @@ function renderHome() {
     homeLayer.innerHTML = html;
     setupHoverCrossfades();
     observeSections(homeLayer);
+    setupScrollPreload(homeLayer, filteredAlbums);
     resetScrollPosition(homeLayer);
 }
 
@@ -501,10 +549,10 @@ function renderLocation(album) {
     let html = '';
     album.plates.forEach((plate, idx) => {
         const image = getPreviewFile(plate);
-        const loading = idx === 0 ? 'eager' : 'lazy';
-        const priority = idx === 0 ? 'high' : 'auto';
+        const loading = idx < 3 ? 'eager' : 'lazy';
+        const priority = idx < 2 ? 'high' : 'auto';
         html += `
-        <section id="plate-${idx}" class="snap-item category-${slugClass(album.category)} w-screen h-screen relative flex items-center justify-center overflow-hidden group select-none cursor-pointer" onclick="openPlateView(${idx})">
+        <section id="plate-${idx}" data-index="${idx}" class="snap-item category-${slugClass(album.category)} w-screen h-screen relative flex items-center justify-center overflow-hidden group select-none cursor-pointer" onclick="openPlateView(${idx})">
             <div class="media-stage">
                 <img class="img-layer zoom-on-hover" src="${getImagePath(album.imageFolder, image)}" loading="${loading}" fetchpriority="${priority}" decoding="async" style="object-position: ${parsePos(plate["Framing Adjust"])}" alt="${album.title}">
                 <div class="glass-wall"></div>
@@ -518,6 +566,7 @@ function renderLocation(album) {
     
     locLayer.innerHTML = html;
     observeSections(locLayer);
+    setupScrollPreload(locLayer, album);
     resetScrollPosition(locLayer);
 }
 
@@ -685,8 +734,27 @@ function updateMobileImageViewer() {
     const plate = currentAlbum.plates[currentIndex];
     mobileViewerImg.src = getImagePath(currentAlbum.imageFolder, getMasterFile(plate));
     mobileViewerImg.alt = plate["Exhibition Title"] || currentAlbum.title;
+    resetMobileViewerZoom();
     if (mobileViewerNative) mobileViewerNative.textContent = plate["Native Name"] || currentAlbum.nativeName;
     if (mobileViewerTitle) mobileViewerTitle.textContent = `${plate["Exhibition Title"] || currentAlbum.title} // ${formatRef(currentIndex)}`;
+}
+
+function applyMobileViewerTransform() {
+    if (!mobileViewerImg) return;
+    mobileViewerImg.style.transform = `translate3d(${mobileViewerTranslateX}px, ${mobileViewerTranslateY}px, 0) scale(${mobileViewerScale})`;
+}
+
+function resetMobileViewerZoom() {
+    mobileViewerScale = 1;
+    mobileViewerTranslateX = 0;
+    mobileViewerTranslateY = 0;
+    applyMobileViewerTransform();
+}
+
+function getTouchDistance(touches) {
+    if (touches.length < 2) return 0;
+    const [a, b] = touches;
+    return Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
 }
 
 function openMobileImageViewer(index = currentIndex) {
@@ -705,6 +773,7 @@ function closeMobileImageViewer() {
     mobileImageViewer.classList.remove('is-borderless');
     mobileImageViewer.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('mobile-viewer-active');
+    resetMobileViewerZoom();
 }
 
 function toggleMobileViewerChrome() {
@@ -726,17 +795,51 @@ if (mobileImageViewer) {
         const touch = event.changedTouches[0];
         mobileViewerTouchStartX = touch.clientX;
         mobileViewerTouchStartY = touch.clientY;
+        mobileViewerDidMove = false;
+        mobileViewerStartTranslateX = mobileViewerTranslateX;
+        mobileViewerStartTranslateY = mobileViewerTranslateY;
+        if (event.touches.length === 2) {
+            mobileViewerTouchStartDistance = getTouchDistance(event.touches);
+            mobileViewerStartScale = mobileViewerScale;
+        }
     }, { passive: true });
+
+    mobileImageViewer.addEventListener('touchmove', event => {
+        if (!mobileImageViewer.classList.contains('is-open')) return;
+        if (event.touches.length === 2) {
+            event.preventDefault();
+            mobileViewerDidMove = true;
+            const distance = getTouchDistance(event.touches);
+            if (!mobileViewerTouchStartDistance) return;
+            mobileViewerScale = Math.max(1, Math.min(4, mobileViewerStartScale * (distance / mobileViewerTouchStartDistance)));
+            if (mobileViewerScale === 1) {
+                mobileViewerTranslateX = 0;
+                mobileViewerTranslateY = 0;
+            }
+            applyMobileViewerTransform();
+            return;
+        }
+
+        if (event.touches.length === 1 && mobileViewerScale > 1) {
+            event.preventDefault();
+            const touch = event.touches[0];
+            mobileViewerDidMove = true;
+            mobileViewerTranslateX = mobileViewerStartTranslateX + touch.clientX - mobileViewerTouchStartX;
+            mobileViewerTranslateY = mobileViewerStartTranslateY + touch.clientY - mobileViewerTouchStartY;
+            applyMobileViewerTransform();
+        }
+    }, { passive: false });
 
     mobileImageViewer.addEventListener('touchend', event => {
         const touch = event.changedTouches[0];
         const deltaX = touch.clientX - mobileViewerTouchStartX;
         const deltaY = touch.clientY - mobileViewerTouchStartY;
+        if (mobileViewerScale > 1) return;
         if (Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4) {
             navigateMobileImageViewer(deltaX < 0 ? 1 : -1);
             return;
         }
-        if (event.target === mobileViewerImg && Math.abs(deltaX) < 12 && Math.abs(deltaY) < 12) {
+        if (event.target === mobileViewerImg && !mobileViewerDidMove && Math.abs(deltaX) < 12 && Math.abs(deltaY) < 12) {
             toggleMobileViewerChrome();
         }
     }, { passive: true });
