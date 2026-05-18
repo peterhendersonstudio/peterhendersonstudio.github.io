@@ -64,6 +64,15 @@ let mobileViewerStartTranslateY = 0;
 let mobileViewerDidMove = false;
 let mobileViewerLastTap = 0;
 let mobileViewerIsLoading = false;
+let aboutTouchStartX = 0;
+let aboutTouchStartY = 0;
+let aboutTouchStartDistance = 0;
+let aboutStartScale = 1;
+let aboutScale = 1;
+let aboutTranslateX = 0;
+let aboutTranslateY = 0;
+let aboutStartTranslateX = 0;
+let aboutStartTranslateY = 0;
 
 // DOM Anchors
 const homeLayer = document.getElementById('layer-home');
@@ -964,12 +973,96 @@ function toggleMobileAccordion(element) {
     if (!isExpanded) parentSection.classList.add('accordion-active');
 }
 
+function getAboutPanel() {
+    return document.querySelector('#about-overlay .about-right-col');
+}
+
+function clampAboutPan() {
+    const panel = getAboutPanel();
+    if (!panel || aboutScale <= 1) {
+        aboutTranslateX = 0;
+        aboutTranslateY = 0;
+        return;
+    }
+
+    const maxX = (panel.clientWidth * (aboutScale - 1)) / 2;
+    const maxY = Math.max(0, (panel.scrollHeight * aboutScale) - panel.clientHeight);
+    aboutTranslateX = Math.max(-maxX, Math.min(maxX, aboutTranslateX));
+    aboutTranslateY = Math.max(-maxY, Math.min(0, aboutTranslateY));
+}
+
+function applyAboutTransform() {
+    const panel = getAboutPanel();
+    if (!panel) return;
+    clampAboutPan();
+    panel.style.transform = `translate3d(${aboutTranslateX}px, ${aboutTranslateY}px, 0) scale(${aboutScale})`;
+    panel.classList.toggle('about-zoomed', aboutScale > 1);
+}
+
+function resetAboutZoom() {
+    aboutScale = 1;
+    aboutTranslateX = 0;
+    aboutTranslateY = 0;
+    aboutTouchStartDistance = 0;
+    applyAboutTransform();
+}
+
+function setupAboutZoomHandlers() {
+    const panel = getAboutPanel();
+    if (!panel || panel.dataset.aboutZoomReady) return;
+    panel.dataset.aboutZoomReady = 'true';
+
+    panel.addEventListener('touchstart', event => {
+        if (!isMobileViewport()) return;
+        const touch = event.touches[0];
+        aboutTouchStartX = touch.clientX;
+        aboutTouchStartY = touch.clientY;
+        aboutStartTranslateX = aboutTranslateX;
+        aboutStartTranslateY = aboutTranslateY;
+        if (event.touches.length === 2) {
+            aboutTouchStartDistance = getTouchDistance(event.touches);
+            aboutStartScale = aboutScale;
+        } else {
+            aboutTouchStartDistance = 0;
+        }
+    }, { passive: true });
+
+    panel.addEventListener('touchmove', event => {
+        if (!isMobileViewport()) return;
+
+        if (event.touches.length === 2) {
+            event.preventDefault();
+            const distance = getTouchDistance(event.touches);
+            if (!aboutTouchStartDistance) return;
+            aboutScale = Math.max(1, Math.min(3, aboutStartScale * (distance / aboutTouchStartDistance)));
+            applyAboutTransform();
+            return;
+        }
+
+        if (event.touches.length === 1 && aboutScale > 1) {
+            event.preventDefault();
+            const touch = event.touches[0];
+            aboutTranslateX = aboutStartTranslateX + touch.clientX - aboutTouchStartX;
+            aboutTranslateY = aboutStartTranslateY + touch.clientY - aboutTouchStartY;
+            applyAboutTransform();
+        }
+    }, { passive: false });
+
+    panel.addEventListener('touchend', () => {
+        if (!isMobileViewport()) return;
+        if (aboutScale <= 1.02) resetAboutZoom();
+        else applyAboutTransform();
+    }, { passive: true });
+}
+
 function toggleAboutModal(show) {
     const overlay = document.getElementById('about-overlay');
     if (!overlay) return;
     const shouldShow = Boolean(show);
     overlay.classList.toggle('visible', shouldShow);
     document.body.classList.toggle('about-modal-active', shouldShow);
+    setupAboutZoomHandlers();
+    resetAboutZoom();
     if (shouldShow) {
         overlay.querySelector('.about-right-col')?.scrollTo(0, 0);
     }
