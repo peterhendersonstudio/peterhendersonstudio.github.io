@@ -3,6 +3,7 @@
    ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@300;400&display=swap');
 
+:root { --app-vh: 100dvh; }
 html { background: #000; color: #fff; scroll-behavior: smooth; }
 body { 
     overflow-x: hidden; 
@@ -989,7 +990,7 @@ section:hover .entry-cue::before {
         position: fixed !important;
         inset: 0 !important;
         width: 100vw !important;
-        height: 100vh !important;
+        height: var(--app-vh, 100dvh) !important;
         background: #000 !important;
         display: flex !important;
         flex-direction: column !important;
@@ -1058,14 +1059,15 @@ section:hover .entry-cue::before {
 
     .mobile-viewer-img {
         width: 100vw !important;
-        height: 100vh !important;
+        height: var(--app-vh, 100dvh) !important;
         max-width: none !important;
         max-height: none !important;
         object-fit: contain !important;
         padding: 3.8rem 0.75rem 6.8rem !important;
         user-select: none !important;
         -webkit-user-select: none !important;
-        transition: padding 0.24s ease !important;
+        opacity: 1 !important;
+        transition: opacity 0.18s ease, padding 0.24s ease !important;
         transform-origin: center center !important;
         will-change: transform, padding !important;
     }
@@ -1073,6 +1075,10 @@ section:hover .entry-cue::before {
     .mobile-image-viewer.is-borderless .mobile-viewer-img {
         padding: 0 !important;
         object-fit: contain !important;
+    }
+
+    .mobile-image-viewer.is-loading .mobile-viewer-img {
+        opacity: 0 !important;
     }
 
     .mobile-image-viewer.is-borderless .mobile-viewer-close,
@@ -1330,8 +1336,8 @@ section:hover .entry-cue::before {
         align-items: flex-start !important;
         width: 100vw !important;
         max-width: 100vw !important;
-        height: 100dvh !important;
-        max-height: 100dvh !important;
+        height: var(--app-vh, 100dvh) !important;
+        max-height: var(--app-vh, 100dvh) !important;
         padding: 4.4rem 1.25rem 2rem !important;
         overflow: hidden !important;
         touch-action: pan-y !important;
@@ -1508,20 +1514,25 @@ section:hover .entry-cue::before {
 
     .mobile-viewer-img {
         width: 100vw !important;
-        height: 100dvh !important;
+        height: var(--app-vh, 100dvh) !important;
         max-width: none !important;
         max-height: none !important;
         object-fit: contain !important;
         padding: 3.8rem 0.75rem 6.8rem !important;
         user-select: none !important;
         -webkit-user-select: none !important;
-        transition: padding 0.24s ease !important;
+        opacity: 1 !important;
+        transition: opacity 0.18s ease, padding 0.24s ease !important;
         transform-origin: center center !important;
         will-change: transform, padding !important;
     }
 
     .mobile-image-viewer.is-borderless .mobile-viewer-img {
         padding: 0 !important;
+    }
+
+    .mobile-image-viewer.is-loading .mobile-viewer-img {
+        opacity: 0 !important;
     }
 
     .mobile-image-viewer.is-borderless .mobile-viewer-close,

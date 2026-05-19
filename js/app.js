@@ -65,6 +65,8 @@ let mobileViewerDidMove = false;
 let mobileViewerLastTap = 0;
 let mobileViewerIsLoading = false;
 let mobileViewerLoadToken = 0;
+let mobileViewerViewportTimer = null;
+let mobileViewerSuppressTouchUntil = 0;
 let aboutTouchStartX = 0;
 let aboutTouchStartY = 0;
 let aboutTouchStartDistance = 0;
@@ -87,6 +89,27 @@ const mobileViewerImg = document.getElementById('mobile-viewer-img');
 const mobileViewerNative = document.getElementById('mobile-viewer-native');
 const mobileViewerTitle = document.getElementById('mobile-viewer-title');
 
+function syncAppViewport() {
+    const viewportHeight = window.visualViewport?.height || window.innerHeight || document.documentElement.clientHeight;
+    if (viewportHeight) document.documentElement.style.setProperty('--app-vh', `${viewportHeight}px`);
+}
+
+function handleAppViewportChange() {
+    syncAppViewport();
+    if (!mobileImageViewer?.classList.contains('is-open')) return;
+
+    mobileViewerSuppressTouchUntil = Date.now() + 520;
+    mobileViewerDidMove = false;
+    mobileViewerTouchStartDistance = 0;
+    window.clearTimeout(mobileViewerViewportTimer);
+    mobileViewerViewportTimer = window.setTimeout(() => {
+        if (!mobileImageViewer?.classList.contains('is-open')) return;
+        document.body.classList.add('mobile-viewer-active');
+        clampMobileViewerPan();
+        applyMobileViewerTransform();
+    }, 140);
+}
+
 function resetScrollPosition(container) {
     if (!container) return;
     container.scrollTop = 0;
@@ -103,6 +126,7 @@ function resetPageScroll() {
 }
 
 function initializeArchive(data) {
+    syncAppViewport();
     rawSheetData = data;
     processSheetData();
     renderHUD();
@@ -114,8 +138,13 @@ function initializeArchive(data) {
 }
 
 window.addEventListener('pageshow', () => {
-    requestAnimationFrame(resetPageScroll);
+    syncAppViewport();
 });
+
+window.addEventListener('resize', handleAppViewportChange, { passive: true });
+window.addEventListener('orientationchange', handleAppViewportChange, { passive: true });
+window.visualViewport?.addEventListener('resize', handleAppViewportChange);
+window.visualViewport?.addEventListener('scroll', handleAppViewportChange);
 
 // Fetch and mount the archive data collection safely
 fetch('data/archive.json')
@@ -853,8 +882,10 @@ function clampMobileViewerPan() {
         return;
     }
 
-    const maxX = (window.innerWidth * (mobileViewerScale - 1)) / 2;
-    const maxY = (window.innerHeight * (mobileViewerScale - 1)) / 2;
+    const viewportWidth = window.visualViewport?.width || window.innerWidth;
+    const viewportHeight = window.visualViewport?.height || window.innerHeight;
+    const maxX = (viewportWidth * (mobileViewerScale - 1)) / 2;
+    const maxY = (viewportHeight * (mobileViewerScale - 1)) / 2;
     mobileViewerTranslateX = Math.max(-maxX, Math.min(maxX, mobileViewerTranslateX));
     mobileViewerTranslateY = Math.max(-maxY, Math.min(maxY, mobileViewerTranslateY));
 }
@@ -921,6 +952,7 @@ function navigateMobileImageViewer(direction) {
 
 if (mobileImageViewer) {
     mobileImageViewer.addEventListener('touchstart', event => {
+        if (Date.now() < mobileViewerSuppressTouchUntil) return;
         const touch = event.changedTouches[0];
         mobileViewerTouchStartX = touch.clientX;
         mobileViewerTouchStartY = touch.clientY;
@@ -937,6 +969,7 @@ if (mobileImageViewer) {
 
     mobileImageViewer.addEventListener('touchmove', event => {
         if (!mobileImageViewer.classList.contains('is-open')) return;
+        if (Date.now() < mobileViewerSuppressTouchUntil) return;
         if (event.touches.length === 2) {
             event.preventDefault();
             mobileViewerDidMove = true;
@@ -957,6 +990,11 @@ if (mobileImageViewer) {
     }, { passive: false });
 
     mobileImageViewer.addEventListener('touchend', event => {
+        if (Date.now() < mobileViewerSuppressTouchUntil) {
+            mobileViewerDidMove = false;
+            mobileViewerTouchStartDistance = 0;
+            return;
+        }
         const touch = event.changedTouches[0];
         const deltaX = touch.clientX - mobileViewerTouchStartX;
         const deltaY = touch.clientY - mobileViewerTouchStartY;
