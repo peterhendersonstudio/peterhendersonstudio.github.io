@@ -67,6 +67,8 @@ let mobileViewerIsLoading = false;
 let mobileViewerLoadToken = 0;
 let mobileViewerViewportTimer = null;
 let mobileViewerSuppressTouchUntil = 0;
+let mobileViewerWasOpenDuringViewportChange = false;
+let mobileViewerViewportRaf = null;
 let aboutTouchStartX = 0;
 let aboutTouchStartY = 0;
 let aboutTouchStartDistance = 0;
@@ -96,18 +98,34 @@ function syncAppViewport() {
 
 function handleAppViewportChange() {
     syncAppViewport();
-    if (!mobileImageViewer?.classList.contains('is-open')) return;
+    const viewerIsOpen = mobileImageViewer?.classList.contains('is-open');
+    if (viewerIsOpen) mobileViewerWasOpenDuringViewportChange = true;
+    if (!viewerIsOpen && !mobileViewerWasOpenDuringViewportChange) return;
 
-    mobileViewerSuppressTouchUntil = Date.now() + 520;
+    mobileViewerSuppressTouchUntil = Math.max(mobileViewerSuppressTouchUntil, Date.now() + 1400);
     mobileViewerDidMove = false;
     mobileViewerTouchStartDistance = 0;
     window.clearTimeout(mobileViewerViewportTimer);
     mobileViewerViewportTimer = window.setTimeout(() => {
-        if (!mobileImageViewer?.classList.contains('is-open')) return;
+        if (!mobileImageViewer || !mobileViewerWasOpenDuringViewportChange || !currentAlbum) return;
+        mobileImageViewer.classList.add('is-open');
+        mobileImageViewer.setAttribute('aria-hidden', 'false');
         document.body.classList.add('mobile-viewer-active');
         clampMobileViewerPan();
         applyMobileViewerTransform();
-    }, 140);
+        mobileViewerWasOpenDuringViewportChange = false;
+    }, 420);
+}
+
+function handleAppViewportScroll() {
+    syncAppViewport();
+    if (!mobileImageViewer?.classList.contains('is-open')) return;
+    if (mobileViewerViewportRaf) return;
+    mobileViewerViewportRaf = requestAnimationFrame(() => {
+        mobileViewerViewportRaf = null;
+        clampMobileViewerPan();
+        applyMobileViewerTransform();
+    });
 }
 
 function resetScrollPosition(container) {
@@ -144,7 +162,7 @@ window.addEventListener('pageshow', () => {
 window.addEventListener('resize', handleAppViewportChange, { passive: true });
 window.addEventListener('orientationchange', handleAppViewportChange, { passive: true });
 window.visualViewport?.addEventListener('resize', handleAppViewportChange);
-window.visualViewport?.addEventListener('scroll', handleAppViewportChange);
+window.visualViewport?.addEventListener('scroll', handleAppViewportScroll);
 
 // Fetch and mount the archive data collection safely
 fetch('data/archive.json')
@@ -929,10 +947,17 @@ function openMobileImageViewer(index = currentIndex) {
 
 function closeMobileImageViewer() {
     if (!mobileImageViewer) return;
+    if (Date.now() < mobileViewerSuppressTouchUntil && mobileViewerWasOpenDuringViewportChange) {
+        mobileImageViewer.classList.add('is-open');
+        mobileImageViewer.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('mobile-viewer-active');
+        return;
+    }
     mobileImageViewer.classList.remove('is-open');
     mobileImageViewer.classList.remove('is-borderless');
     mobileImageViewer.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('mobile-viewer-active');
+    mobileViewerWasOpenDuringViewportChange = false;
     resetMobileViewerZoom();
 }
 
